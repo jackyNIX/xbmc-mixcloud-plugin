@@ -1,3 +1,26 @@
-XBMC Mixcloud Plugin
+============================================
+XBMC Mixcloud Plugin - jackyNIX
+============================================
 
 Current version: 0.3.0 beta
+============================================
+
+Features:
+  - Browse
+    - New
+    - Hot
+    - Popular
+    - Categories
+  - Search
+    - Cloudcasts
+  - Url resolving (removing invalid streams)
+  - Hi-res icons
+============================================
+
+Todo:
+  - Search
+    - Users
+    - Artists
+    - Tracks
+    - Tags
+============================================  
