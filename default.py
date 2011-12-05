@@ -222,7 +222,7 @@ def get_cloudcasts(url,offset):
 def get_stream(cloudcast_key):
     casturl='http://www.mixcloud.com/api/1/cloudcast' + cloudcast_key[0:len(cloudcast_key)-1] + '.json?embed_type=cloudcast'
     print casturl
-    h=urllib2.urlopen(url)
+    h=urllib2.urlopen(casturl)
     contentcast=h.read()
     json_contentcast = json.loads(contentcast)
     if QUERY_AUDIOFORMATS in json_contentcast and json_contentcast[QUERY_AUDIOFORMATS] :
