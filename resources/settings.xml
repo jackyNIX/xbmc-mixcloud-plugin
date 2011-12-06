@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<settings>
+
+  <!-- General -->
+  <category label="General">
+    <setting id="page_limit" type="enum" label="Maximum cloudcasts on page" values="10|20|30|40|50" default="1" />
+    <setting type="sep" />
+  </category>
+
+  <!-- History -->
+  <category label="History">
+    <setting id="play_history" type="enum" label="Maximum played cloudcasts" values="10|20|30|40|50" default="1" />
+    <setting id="search_history" type="enum" label="Maximum searched cloudcasts" values="10|20|30|40|50" default="1" />
+    <setting type="sep" />
+  </category>
+
+</settings>
