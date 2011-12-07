@@ -46,6 +46,7 @@ MODE_HOT=       10
 MODE_NEW=       11
 MODE_POPULAR=   12
 MODE_CATEGORIES=20
+MODE_USERS=     21
 MODE_SEARCH=    30
 MODE_PLAY=      40
 
@@ -63,7 +64,6 @@ STR_DURATION=    u'duration'
 STR_ID=          u'id'
 STR_FORMAT=      u'format'
 STR_KEY=         u'key'
-STR_LARGE=       u'large'
 STR_LIMIT=       u'limit'
 STR_MODE=        u'mode'
 STR_MP3=         u'mp3'
@@ -82,11 +82,17 @@ STR_TYPE=        u'type'
 STR_USER=        u'user'
 STR_YEAR=        u'year'
 
+STR_THUMB_SIZES= {0:u'small',1:u'thumbnail',2:u'medium',3:u'large',4:u'extra_large'}
+
 
 
 plugin_handle=int(sys.argv[1])
-__settings__ = xbmcaddon.Addon('plugin.audio.mixcloud')
+
+
+
+__settings__ =xbmcaddon.Addon('plugin.audio.mixcloud')
 limit=(1+int(__settings__.getSetting('page_limit')))*10
+thumb_size=STR_THUMB_SIZES[int(__settings__.getSetting('thumb_size'))]
 
 
 
@@ -154,19 +160,28 @@ def show_categories_menu(key,offset):
 
 
 
+def show_users_menu(key,offset):
+    found=get_cloudcasts(URL_API+key[1:len(key)-1]+'/cloudcasts/',{STR_LIMIT:limit,STR_OFFSET:offset})
+    if found==limit:
+        add_folder_item(name="More...",parameters={STR_MODE:MODE_USERS,STR_KEY:key,STR_OFFSET:offset+limit})
+    xbmcplugin.endOfDirectory(handle=plugin_handle,succeeded=True)
+
+
+
 def show_search_menu(key,query,offset):
     if key=='':
-        add_folder_item(name="Cloudcast...",parameters={STR_MODE:MODE_SEARCH,STR_KEY:STR_CLOUDCAST,STR_OFFSET:0})
+        add_folder_item(name="Cloudcasts...",parameters={STR_MODE:MODE_SEARCH,STR_KEY:STR_CLOUDCAST,STR_OFFSET:0})
+        add_folder_item(name="Users...",parameters={STR_MODE:MODE_SEARCH,STR_KEY:STR_USER,STR_OFFSET:0})
         xbmcplugin.endOfDirectory(handle=plugin_handle,succeeded=True)
     else:
         if query=='':
             query=get_query()
         if query!='':
             found=0
-            if (key==STR_CLOUDCAST):
+            if key==STR_CLOUDCAST:
                 found=get_cloudcasts(URL_SEARCH,{STR_Q:query,STR_TYPE:key,STR_LIMIT:limit,STR_OFFSET:offset})
-            elif key==STR_ARTIST:
-                found=get_cloudcasts(URL_SEARCH,{STR_Q:query,STR_TYPE:key,STR_LIMIT:limit,STR_OFFSET:offset})
+            elif key==STR_USER:
+                found=get_users(URL_SEARCH,{STR_Q:query,STR_TYPE:key,STR_LIMIT:limit,STR_OFFSET:offset})
             if found==limit:
                 add_folder_item(name="More...",parameters={STR_MODE:MODE_SEARCH,STR_KEY:key,STR_QUERY:query,STR_OFFSET:offset+limit})
             xbmcplugin.endOfDirectory(handle=plugin_handle,succeeded=True)
@@ -186,7 +201,7 @@ def get_cloudcasts(url,parameters):
     found=0
     if len(parameters)>0:
         url=url+'?'+urllib.urlencode(parameters)
-    print(url)
+    print('MIXCLOUD '+'get cloudcasts '+url)
     h=urllib2.urlopen(url)
     content=h.read()
     json_content=json.loads(content)
@@ -222,8 +237,8 @@ def get_cloudcasts(url,parameters):
                         json_username=json_user[STR_NAME]
                 if STR_PICTURES in json_cloudcast and json_cloudcast[STR_PICTURES]:
                     json_pictures=json_cloudcast[STR_PICTURES]
-                    if STR_LARGE in json_pictures and json_pictures[STR_LARGE]:
-                        json_image=json_pictures[STR_LARGE]
+                    if thumb_size in json_pictures and json_pictures[thumb_size]:
+                        json_image=json_pictures[thumb_size]
                 add_audio_item({STR_COUNT:json_tracknumber,STR_TRACKNUMBER:json_tracknumber,STR_TITLE:json_name,STR_ARTIST:json_username,STR_DURATION:json_length,STR_YEAR:json_year,STR_DATE:json_date},
                                parameters={STR_MODE:MODE_PLAY,STR_KEY:json_key},
                                img=json_image)
@@ -233,8 +248,8 @@ def get_cloudcasts(url,parameters):
 
 
 def get_stream(cloudcast_key):
-    casturl=URL_STREAM.format(cloudcast_key[1:len(cloudcast_key)-1])
-    print casturl
+    casturl=URL_STREAM.replace('{0}',cloudcast_key[1:len(cloudcast_key)-1])
+    print('MIXCLOUD '+'resolving cloudcast stream for '+cloudcast_key)
     h=urllib2.urlopen(casturl)
     contentcast=h.read()
     json_contentcast=json.loads(contentcast)
@@ -242,15 +257,16 @@ def get_stream(cloudcast_key):
         json_audioformats=json_contentcast[STR_AUDIOFORMATS]
         if STR_MP3 in json_audioformats and json_audioformats[STR_MP3]:
             json_mp3=json_audioformats[STR_MP3]
+            print('MIXCLOUD '+'found '+str(len(json_mp3))+' streams')
             for json_mp3url in json_mp3:
                 json_url=json_mp3url
-                print json_url
+                print('MIXCLOUD '+'trying '+json_url)
                 try:
                     conn=urllib2.urlopen(json_url)
-                    print '200 OK'
+                    print('MIXCLOUD '+'200 OK')
                     conn.close
                 except Exception,e:
-                    print str(e)
+                    print('MIXCLOUD '+str(e))
                     json_url=''
                 if json_url!='':
                     return json_url
@@ -276,9 +292,35 @@ def get_categories(url):
                     json_format=json_category[STR_FORMAT]
                 if STR_PICTURES in json_category and json_category[STR_PICTURES]:
                     json_pictures=json_category[STR_PICTURES]
-                    if STR_LARGE in json_pictures and json_pictures[STR_LARGE]:
-                        json_thumbnail=json_pictures[STR_LARGE]
+                    if thumb_size in json_pictures and json_pictures[thumb_size]:
+                        json_thumbnail=json_pictures[thumb_size]
                 add_folder_item(name=json_name,parameters={STR_MODE:MODE_CATEGORIES,STR_KEY:json_key},img=json_thumbnail)
+
+
+
+def get_users(url,parameters):
+    found=0
+    if len(parameters)>0:
+        url=url+'?'+urllib.urlencode(parameters)
+    h=urllib2.urlopen(url)
+    content=h.read()
+    json_content=json.loads(content)
+    if STR_DATA in json_content and json_content[STR_DATA]:
+        json_data=json_content[STR_DATA]
+        for json_user in json_data:
+            if STR_NAME in json_user and json_user[STR_NAME]:
+                json_name=json_user[STR_NAME]
+                json_key=''
+                json_thumbnail=''
+                if STR_KEY in json_user and json_user[STR_KEY]:
+                    json_key=json_user[STR_KEY]
+                if STR_PICTURES in json_user and json_user[STR_PICTURES]:
+                    json_pictures=json_user[STR_PICTURES]
+                    if thumb_size in json_pictures and json_pictures[thumb_size]:
+                        json_thumbnail=json_pictures[thumb_size]
+                add_folder_item(name=json_name,parameters={STR_MODE:MODE_USERS,STR_KEY:json_key},img=json_thumbnail)
+                found=found+1
+    return found
 
 
 
@@ -311,12 +353,12 @@ offset=int(params.get(STR_OFFSET,"0"))
 key=params.get(STR_KEY,"")
 query=params.get(STR_QUERY,"")
 
-print "##########################################################"
-print("Mode: %s" % mode)
-print("Offset: %s" % offset)
-print("Key: %s" % key)
-print("Query: %s" % query)
-print "##########################################################"
+print('MIXCLOUD '+"##########################################################")
+print('MIXCLOUD '+"Mode: %s" % mode)
+print('MIXCLOUD '+"Offset: %s" % offset)
+print('MIXCLOUD '+"Key: %s" % key)
+print('MIXCLOUD '+"Query: %s" % query)
+print('MIXCLOUD '+"##########################################################")
 
 if not sys.argv[2] or mode==MODE_HOME:
     ok=show_home_menu()
@@ -328,6 +370,8 @@ elif mode==MODE_POPULAR:
     ok=show_popular_menu(offset)
 elif mode==MODE_CATEGORIES:
     ok=show_categories_menu(key,offset)
+elif mode==MODE_USERS:
+    ok=show_users_menu(key,offset)
 elif mode==MODE_SEARCH:
     ok=show_search_menu(key,query,offset)
 elif mode==MODE_PLAY:

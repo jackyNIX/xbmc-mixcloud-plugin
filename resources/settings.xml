@@ -4,13 +4,14 @@
   <!-- General -->
   <category label="General">
     <setting id="page_limit" type="enum" label="Maximum cloudcasts on page" values="10|20|30|40|50" default="1" />
+    <setting id="thumb_size" type="enum" label="Download thumbnail size" values="very small|small|medium|large|extra large" default="2" />
     <setting type="sep" />
   </category>
 
   <!-- History -->
   <category label="History">
-    <setting id="play_history" type="enum" label="Maximum played cloudcasts" values="10|20|30|40|50" default="1" />
-    <setting id="search_history" type="enum" label="Maximum searched cloudcasts" values="10|20|30|40|50" default="1" />
+    <setting id="play_history" type="enum" label="Maximum played cloudcasts" values="10|20|30|40|50" default="1" enable="false"/>
+    <setting id="search_history" type="enum" label="Maximum searches" values="10|20|30|40|50" default="1" enable="false"/>
     <setting type="sep" />
   </category>
 

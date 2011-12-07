@@ -1,9 +1,13 @@
+0.3.3
+- Added configurable download thumbnail size
+- Added search users
+
 0.3.2
-- configurable max cloudcasts on page
-- some code cleaning
+- Added configurable max cloudcasts on page
+- Some code cleaning
 
 0.3.1
-- bugfix migr. -> urllib2
+- Bugfix migr. -> urllib2
 
 0.3.0
 - Added search cloudcast
