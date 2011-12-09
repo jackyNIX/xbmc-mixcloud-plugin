@@ -4,7 +4,7 @@
 @author: jackyNIX
 
 Copyright (C) 2011 jackyNIX
- 
+
 This file is part of XBMC MixCloud Plugin.
 
 XBMC MixCloud Plugin is free software: you can redistribute it and/or modify
@@ -45,6 +45,7 @@ MODE_HOME=       0
 MODE_HOT=       10
 MODE_NEW=       11
 MODE_POPULAR=   12
+MODE_HISTORY=   13
 MODE_CATEGORIES=20
 MODE_USERS=     21
 MODE_SEARCH=    30
@@ -61,6 +62,7 @@ STR_CREATEDTIME= u'created_time'
 STR_DATA=        u'data'
 STR_DATE=        u'date'
 STR_DURATION=    u'duration'
+STR_HISTORY=     u'history'
 STR_ID=          u'id'
 STR_FORMAT=      u'format'
 STR_KEY=         u'key'
@@ -96,12 +98,13 @@ thumb_size=STR_THUMB_SIZES[int(__settings__.getSetting('thumb_size'))]
 
 
 
-def add_audio_item(infolabels,parameters={},img=''):
+def add_audio_item(infolabels,parameters={},img='',total=0):
     listitem=xbmcgui.ListItem(infolabels[STR_TITLE],infolabels[STR_ARTIST],iconImage=img,thumbnailImage=img)
     listitem.setInfo('Music',infolabels)
     listitem.setProperty('IsPlayable','true')
     url=sys.argv[0]+'?'+urllib.urlencode(parameters)
-    xbmcplugin.addDirectoryItem(plugin_handle,url,listitem,isFolder=False,totalItems=limit+1)
+    print(str(total))
+    xbmcplugin.addDirectoryItem(plugin_handle,url,listitem,isFolder=False,totalItems=total)
 
 
 
@@ -121,6 +124,7 @@ def show_home_menu():
     add_folder_item(name="Popular",parameters={STR_MODE:MODE_POPULAR,STR_OFFSET:0})
     add_folder_item(name="Categories",parameters={STR_MODE:MODE_CATEGORIES,STR_OFFSET:0})
     add_folder_item(name="Search",parameters={STR_MODE:MODE_SEARCH})
+    add_folder_item(name="History",parameters={STR_MODE:MODE_HISTORY})
     xbmcplugin.endOfDirectory(handle=plugin_handle,succeeded=True)
 
 
@@ -145,7 +149,7 @@ def show_popular_menu(offset):
     found=get_cloudcasts(URL_POPULAR,{STR_LIMIT:limit,STR_OFFSET:offset})
     if found==limit:
         add_folder_item(name="More...",parameters={STR_MODE:MODE_POPULAR,STR_OFFSET:offset+limit})
-    xbmcplugin.endOfDirectory(handle=plugin_handle,succeeded=True)
+    xbmcplugin.endOfDirectory(handle=plugin_handle,succeeded=True)    
 
 
 
@@ -172,19 +176,56 @@ def show_search_menu(key,query,offset):
     if key=='':
         add_folder_item(name="Cloudcasts...",parameters={STR_MODE:MODE_SEARCH,STR_KEY:STR_CLOUDCAST,STR_OFFSET:0})
         add_folder_item(name="Users...",parameters={STR_MODE:MODE_SEARCH,STR_KEY:STR_USER,STR_OFFSET:0})
+        add_folder_item(name="History",parameters={STR_MODE:MODE_SEARCH,STR_KEY:STR_HISTORY,STR_OFFSET:0})
         xbmcplugin.endOfDirectory(handle=plugin_handle,succeeded=True)
     else:
-        if query=='':
-            query=get_query()
-        if query!='':
-            found=0
-            if key==STR_CLOUDCAST:
-                found=get_cloudcasts(URL_SEARCH,{STR_Q:query,STR_TYPE:key,STR_LIMIT:limit,STR_OFFSET:offset})
-            elif key==STR_USER:
-                found=get_users(URL_SEARCH,{STR_Q:query,STR_TYPE:key,STR_LIMIT:limit,STR_OFFSET:offset})
-            if found==limit:
-                add_folder_item(name="More...",parameters={STR_MODE:MODE_SEARCH,STR_KEY:key,STR_QUERY:query,STR_OFFSET:offset+limit})
-            xbmcplugin.endOfDirectory(handle=plugin_handle,succeeded=True)
+        if key==STR_HISTORY:
+            show_history_search_menu()
+        else:
+            if query=='':
+                query=get_query()
+            if query!='':
+                found=0
+                if key==STR_CLOUDCAST:
+                    found=get_cloudcasts(URL_SEARCH,{STR_Q:query,STR_TYPE:key,STR_LIMIT:limit,STR_OFFSET:offset})
+                elif key==STR_USER:
+                    found=get_users(URL_SEARCH,{STR_Q:query,STR_TYPE:key,STR_LIMIT:limit,STR_OFFSET:offset})
+                if found==limit:
+                    add_folder_item(name="More...",parameters={STR_MODE:MODE_SEARCH,STR_KEY:key,STR_QUERY:query,STR_OFFSET:offset+limit})
+                add_to_settinglist('search_history_list',urllib.urlencode({key:query}),'search_history_max')
+                xbmcplugin.endOfDirectory(handle=plugin_handle,succeeded=True)
+
+
+
+def show_history_menu():
+    playhistmax=(1+int(__settings__.getSetting('play_history_max')))*10
+    if __settings__.getSetting('play_history_list'):
+        playhistlist=__settings__.getSetting('play_history_list').split(', ')
+        while len(playhistlist)>playhistmax:
+            playhistlist.pop()
+        index=1
+        total=len(playhistlist)
+        while len(playhistlist)>0:
+            key=playhistlist.pop(0)
+            if get_cloudcast(URL_API+key[1:len(key)],{},index,total):
+                index=index+1
+    xbmcplugin.endOfDirectory(handle=plugin_handle,succeeded=True)
+
+
+
+def show_history_search_menu():
+    searchhistmax=(1+int(__settings__.getSetting('search_history_max')))*10
+    if __settings__.getSetting('search_history_list'):
+        searchhistlist=__settings__.getSetting('search_history_list').split(', ')
+        while len(searchhistlist)>searchhistmax:
+            searchhistlist.pop()
+        total=len(searchhistlist)
+        while len(searchhistlist)>0:
+            pair=searchhistlist.pop(0).split('=')
+            key=urllib.unquote_plus(pair[0])
+            query=urllib.unquote_plus(pair[1])
+            add_folder_item(name=key+' = "'+query+'"',parameters={STR_MODE:MODE_SEARCH,STR_KEY:key,STR_QUERY:query,STR_OFFSET:0})
+    xbmcplugin.endOfDirectory(handle=plugin_handle,succeeded=True)
 
 
 
@@ -192,6 +233,7 @@ def play_cloudcast(key):
     url=get_stream(key)
     if url:
         xbmcplugin.setResolvedUrl(handle=plugin_handle,succeeded=True,listitem=xbmcgui.ListItem(path=url))
+        add_to_settinglist('play_history_list',key,'play_history_max')
     else:
         xbmcplugin.setResolvedUrl(handle=plugin_handle,succeeded=False,listitem=xbmcgui.ListItem())
 
@@ -207,6 +249,7 @@ def get_cloudcasts(url,parameters):
     json_content=json.loads(content)
     if STR_DATA in json_content and json_content[STR_DATA] :
         json_data=json_content[STR_DATA]
+        total=len(json_data)+1
         json_tracknumber=0
         if STR_OFFSET in parameters:
             json_tracknumber=parameters[STR_OFFSET]
@@ -214,36 +257,55 @@ def get_cloudcasts(url,parameters):
             json_tracknumber=0
         for json_cloudcast in json_data:
             json_tracknumber=json_tracknumber+1
-            if STR_NAME in json_cloudcast and json_cloudcast[STR_NAME]:
-                json_name=json_cloudcast[STR_NAME]
-                json_key=''
-                json_year=0
-                json_date=''
-                json_length=0
-                json_username=''
-                json_image=''
-                if STR_KEY in json_cloudcast and json_cloudcast[STR_KEY]:
-                    json_key=json_cloudcast[STR_KEY]
-                if STR_CREATEDTIME in json_cloudcast and json_cloudcast[STR_CREATEDTIME]:
-                    json_created=json_cloudcast[STR_CREATEDTIME]
-                    json_structtime=time.strptime(json_created[0:10],'%Y-%m-%d')
-                    json_year=int(time.strftime('%Y',json_structtime))
-                    json_date=time.strftime('%d/%m/Y',json_structtime)
-                if STR_AUDIOLENGTH in json_cloudcast and json_cloudcast[STR_AUDIOLENGTH]:
-                    json_length=json_cloudcast[STR_AUDIOLENGTH]
-                if STR_USER in json_cloudcast and json_cloudcast[STR_USER]:
-                    json_user=json_cloudcast[STR_USER]
-                    if STR_NAME in json_user and json_user[STR_NAME]:
-                        json_username=json_user[STR_NAME]
-                if STR_PICTURES in json_cloudcast and json_cloudcast[STR_PICTURES]:
-                    json_pictures=json_cloudcast[STR_PICTURES]
-                    if thumb_size in json_pictures and json_pictures[thumb_size]:
-                        json_image=json_pictures[thumb_size]
-                add_audio_item({STR_COUNT:json_tracknumber,STR_TRACKNUMBER:json_tracknumber,STR_TITLE:json_name,STR_ARTIST:json_username,STR_DURATION:json_length,STR_YEAR:json_year,STR_DATE:json_date},
-                               parameters={STR_MODE:MODE_PLAY,STR_KEY:json_key},
-                               img=json_image)
+            if add_cloudcast(json_tracknumber,json_cloudcast,total):
                 found=found+1
     return found
+
+
+
+def get_cloudcast(url,parameters,index=1,total=0):
+    if len(parameters)>0:
+        url=url+'?'+urllib.urlencode(parameters)
+    print('MIXCLOUD '+'get cloudcast '+url)
+    h=urllib2.urlopen(url)
+    content=h.read()
+    json_cloudcast=json.loads(content)
+    return add_cloudcast(index,json_cloudcast,total)
+
+
+def add_cloudcast(index,json_cloudcast,total):
+    if STR_NAME in json_cloudcast and json_cloudcast[STR_NAME]:
+        json_name=json_cloudcast[STR_NAME]
+        json_key=''
+        json_year=0
+        json_date=''
+        json_length=0
+        json_username=''
+        json_image=''
+        if STR_KEY in json_cloudcast and json_cloudcast[STR_KEY]:
+            json_key=json_cloudcast[STR_KEY]
+        if STR_CREATEDTIME in json_cloudcast and json_cloudcast[STR_CREATEDTIME]:
+            json_created=json_cloudcast[STR_CREATEDTIME]
+            json_structtime=time.strptime(json_created[0:10],'%Y-%m-%d')
+            json_year=int(time.strftime('%Y',json_structtime))
+            json_date=time.strftime('%d/%m/Y',json_structtime)
+        if STR_AUDIOLENGTH in json_cloudcast and json_cloudcast[STR_AUDIOLENGTH]:
+            json_length=json_cloudcast[STR_AUDIOLENGTH]
+        if STR_USER in json_cloudcast and json_cloudcast[STR_USER]:
+            json_user=json_cloudcast[STR_USER]
+            if STR_NAME in json_user and json_user[STR_NAME]:
+                json_username=json_user[STR_NAME]
+        if STR_PICTURES in json_cloudcast and json_cloudcast[STR_PICTURES]:
+            json_pictures=json_cloudcast[STR_PICTURES]
+            if thumb_size in json_pictures and json_pictures[thumb_size]:
+                json_image=json_pictures[thumb_size]
+        add_audio_item({STR_COUNT:index,STR_TRACKNUMBER:index,STR_TITLE:json_name,STR_ARTIST:json_username,STR_DURATION:json_length,STR_YEAR:json_year,STR_DATE:json_date},
+                      {STR_MODE:MODE_PLAY,STR_KEY:json_key},
+                      json_image,
+                      total)
+        return True
+    else:
+        return False
     
 
 
@@ -347,6 +409,20 @@ def parameters_string_to_dict(parameters):
 
 
 
+def add_to_settinglist(name,value,maxname):
+    max=(1+int(__settings__.getSetting(maxname)))*10
+    settinglist=[]
+    if __settings__.getSetting(name):
+        settinglist=__settings__.getSetting(name).split(', ')
+    while settinglist.count(value)>0:
+        settinglist.remove(value)
+    settinglist.insert(0,value)
+    while len(settinglist)>max:
+        settinglist.pop()
+    __settings__.setSetting(name,', '.join(settinglist))
+
+
+
 params=parameters_string_to_dict(urllib.unquote(sys.argv[2]))
 mode=int(params.get(STR_MODE,"0"))
 offset=int(params.get(STR_OFFSET,"0"))
@@ -374,5 +450,7 @@ elif mode==MODE_USERS:
     ok=show_users_menu(key,offset)
 elif mode==MODE_SEARCH:
     ok=show_search_menu(key,query,offset)
+elif mode==MODE_HISTORY:
+    ok=show_history_menu(offset)
 elif mode==MODE_PLAY:
     ok=play_cloudcast(key)

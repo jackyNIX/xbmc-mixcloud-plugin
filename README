@@ -2,7 +2,7 @@
 XBMC Mixcloud Plugin - jackyNIX
 ============================================
 
-Current version: 0.3.3 beta
+Current version: 0.4.0 beta
 ============================================
 
 Features:
@@ -16,11 +16,11 @@ Features:
     - Users
   - Url resolving (removing invalid streams)
   - Thumbnails (configurable download size)
+  - History
+    - Played cloudcasts
+    - Search
 ============================================
 
 Todo:
-  - History
-    - Search
-    - Cloudcasts
   - Foolproof error handling
 ============================================  
