@@ -1,3 +1,6 @@
+0.4.1
+- Some bugfixes
+
 0.4.0
 - Added history played cloudcasts
 - Added history searches

@@ -103,7 +103,6 @@ def add_audio_item(infolabels,parameters={},img='',total=0):
     listitem.setInfo('Music',infolabels)
     listitem.setProperty('IsPlayable','true')
     url=sys.argv[0]+'?'+urllib.urlencode(parameters)
-    print(str(total))
     xbmcplugin.addDirectoryItem(plugin_handle,url,listitem,isFolder=False,totalItems=total)
 
 
@@ -180,10 +179,12 @@ def show_search_menu(key,query,offset):
         xbmcplugin.endOfDirectory(handle=plugin_handle,succeeded=True)
     else:
         if key==STR_HISTORY:
-            show_history_search_menu()
+            show_history_search_menu(offset)
         else:
             if query=='':
                 query=get_query()
+            else:
+                query=urllib.unquote_plus(query)
             if query!='':
                 found=0
                 if key==STR_CLOUDCAST:
@@ -197,7 +198,7 @@ def show_search_menu(key,query,offset):
 
 
 
-def show_history_menu():
+def show_history_menu(offset):
     playhistmax=(1+int(__settings__.getSetting('play_history_max')))*10
     if __settings__.getSetting('play_history_list'):
         playhistlist=__settings__.getSetting('play_history_list').split(', ')
@@ -213,7 +214,7 @@ def show_history_menu():
 
 
 
-def show_history_search_menu():
+def show_history_search_menu(offset):
     searchhistmax=(1+int(__settings__.getSetting('search_history_max')))*10
     if __settings__.getSetting('search_history_list'):
         searchhistlist=__settings__.getSetting('search_history_list').split(', ')
