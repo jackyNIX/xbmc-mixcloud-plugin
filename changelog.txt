@@ -1,3 +1,6 @@
+1.0.0
+- Fixed streaming
+
 0.4.1
 - Some bugfixes
 
