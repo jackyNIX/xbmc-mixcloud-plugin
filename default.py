@@ -27,7 +27,8 @@ import sys,time
 import xbmc,xbmcgui,xbmcplugin,xbmcaddon
 import urllib,urllib2
 import simplejson as json
-
+import re
+import sys
 
 
 URL_PLUGIN=    'plugin://music/MixCloud/'
@@ -311,28 +312,15 @@ def add_cloudcast(index,json_cloudcast,total):
 
 
 def get_stream(cloudcast_key):
-    casturl=URL_STREAM.replace('{0}',cloudcast_key[1:len(cloudcast_key)-1])
-    print('MIXCLOUD '+'resolving cloudcast stream for '+cloudcast_key)
-    h=urllib2.urlopen(casturl)
-    contentcast=h.read()
-    json_contentcast=json.loads(contentcast)
-    if STR_AUDIOFORMATS in json_contentcast and json_contentcast[STR_AUDIOFORMATS]:
-        json_audioformats=json_contentcast[STR_AUDIOFORMATS]
-        if STR_MP3 in json_audioformats and json_audioformats[STR_MP3]:
-            json_mp3=json_audioformats[STR_MP3]
-            print('MIXCLOUD '+'found '+str(len(json_mp3))+' streams')
-            for json_mp3url in json_mp3:
-                json_url=json_mp3url
-                print('MIXCLOUD '+'trying '+json_url)
-                try:
-                    conn=urllib2.urlopen(json_url)
-                    print('MIXCLOUD '+'200 OK')
-                    conn.close
-                except Exception,e:
-                    print('MIXCLOUD '+str(e))
-                    json_url=''
-                if json_url!='':
-                    return json_url
+    ck="http://www.mixcloud.com"+cloudcast_key
+    print('MIXCLOUD '+'resolving cloudcast stream for '+ck)
+    request = urllib2.Request('http://offliberty.com/off.php', 'track=%s&refext=' % ck)
+    request.add_header('Referer', 'http://offliberty.com/')
+    response = urllib2.urlopen(request)
+    data = response.read()
+    match = re.search('HREF="(.*)" class="download"', data)
+    return match.group(1)
+ 
     return ''
 
 
