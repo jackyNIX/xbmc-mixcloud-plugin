@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addon id="plugin.audio.mixcloud"
        name="MixCloud"
-       version="0.4.1"
-       provider-name="jackyNIX">
+       version="1.0"
+       provider-name="jackyNIX/Bochi">
   <requires>
     <import addon="xbmc.python" version="1.0"/>
     <import addon="script.module.simplejson" version="2.0.10"/>
