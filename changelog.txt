@@ -1,4 +1,5 @@
 1.0.0
+- Bochi joined the project
 - Fixed streaming
 
 0.4.1
