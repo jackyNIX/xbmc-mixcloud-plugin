@@ -90,12 +90,26 @@ STR_THUMB_SIZES= {0:u'small',1:u'thumbnail',2:u'medium',3:u'large',4:u'extra_lar
 
 
 plugin_handle=int(sys.argv[1])
+__addon__ =xbmcaddon.Addon('plugin.audio.mixcloud')
 
 
 
-__settings__ =xbmcaddon.Addon('plugin.audio.mixcloud')
-limit=(1+int(__settings__.getSetting('page_limit')))*10
-thumb_size=STR_THUMB_SIZES[int(__settings__.getSetting('thumb_size'))]
+debugenabled=(__addon__.getSetting('debug')=='true')
+limit=       (1+int(__addon__.getSetting('page_limit')))*10
+thumb_size=  STR_THUMB_SIZES[int(__addon__.getSetting('thumb_size'))]
+
+
+
+STRLOC_COMMON_MORE=          __addon__.getLocalizedString(30001)
+STRLOC_MAINMENU_HOT=         __addon__.getLocalizedString(30100)
+STRLOC_MAINMENU_NEW=         __addon__.getLocalizedString(30101)
+STRLOC_MAINMENU_POPULAR=     __addon__.getLocalizedString(30102)
+STRLOC_MAINMENU_CATEGORIES=  __addon__.getLocalizedString(30103)
+STRLOC_MAINMENU_SEARCH=      __addon__.getLocalizedString(30104)
+STRLOC_MAINMENU_HISTORY=     __addon__.getLocalizedString(30105)
+STRLOC_SEARCHMENU_CLOUDCASTS=__addon__.getLocalizedString(30110)
+STRLOC_SEARCHMENU_USERS=     __addon__.getLocalizedString(30111)
+STRLOC_SEARCHMENU_HISTORY=   __addon__.getLocalizedString(30112)
 
 
 
@@ -119,12 +133,12 @@ def add_folder_item(name,infolabels={},parameters={},img=''):
 
 
 def show_home_menu():
-    add_folder_item(name="Hot",parameters={STR_MODE:MODE_HOT,STR_OFFSET:0})
-    add_folder_item(name="New",parameters={STR_MODE:MODE_NEW,STR_OFFSET:0})
-    add_folder_item(name="Popular",parameters={STR_MODE:MODE_POPULAR,STR_OFFSET:0})
-    add_folder_item(name="Categories",parameters={STR_MODE:MODE_CATEGORIES,STR_OFFSET:0})
-    add_folder_item(name="Search",parameters={STR_MODE:MODE_SEARCH})
-    add_folder_item(name="History",parameters={STR_MODE:MODE_HISTORY})
+    add_folder_item(name=STRLOC_MAINMENU_HOT,parameters={STR_MODE:MODE_HOT,STR_OFFSET:0})
+    add_folder_item(name=STRLOC_MAINMENU_NEW,parameters={STR_MODE:MODE_NEW,STR_OFFSET:0})
+    add_folder_item(name=STRLOC_MAINMENU_POPULAR,parameters={STR_MODE:MODE_POPULAR,STR_OFFSET:0})
+    add_folder_item(name=STRLOC_MAINMENU_CATEGORIES,parameters={STR_MODE:MODE_CATEGORIES,STR_OFFSET:0})
+    add_folder_item(name=STRLOC_MAINMENU_SEARCH,parameters={STR_MODE:MODE_SEARCH})
+    add_folder_item(name=STRLOC_MAINMENU_HISTORY,parameters={STR_MODE:MODE_HISTORY})
     xbmcplugin.endOfDirectory(handle=plugin_handle,succeeded=True)
 
 
@@ -132,7 +146,7 @@ def show_home_menu():
 def show_hot_menu(offset):
     found=get_cloudcasts(URL_HOT,{STR_LIMIT:limit,STR_OFFSET:offset})
     if found==limit:
-        add_folder_item(name="More...",parameters={STR_MODE:MODE_HOT,STR_OFFSET:offset+limit})
+        add_folder_item(name=STRLOC_COMMON_MORE,parameters={STR_MODE:MODE_HOT,STR_OFFSET:offset+limit})
     xbmcplugin.endOfDirectory(handle=plugin_handle,succeeded=True)
 
 
@@ -140,7 +154,7 @@ def show_hot_menu(offset):
 def show_new_menu(offset):
     found=get_cloudcasts(URL_NEW,{STR_LIMIT:limit,STR_OFFSET:offset})
     if found==limit:
-        add_folder_item(name="More...",parameters={STR_MODE:MODE_NEW,STR_OFFSET:offset+limit})
+        add_folder_item(name=STRLOC_COMMON_MORE,parameters={STR_MODE:MODE_NEW,STR_OFFSET:offset+limit})
     xbmcplugin.endOfDirectory(handle=plugin_handle,succeeded=True)
 
 
@@ -148,7 +162,7 @@ def show_new_menu(offset):
 def show_popular_menu(offset):
     found=get_cloudcasts(URL_POPULAR,{STR_LIMIT:limit,STR_OFFSET:offset})
     if found==limit:
-        add_folder_item(name="More...",parameters={STR_MODE:MODE_POPULAR,STR_OFFSET:offset+limit})
+        add_folder_item(name=STRLOC_COMMON_MORE,parameters={STR_MODE:MODE_POPULAR,STR_OFFSET:offset+limit})
     xbmcplugin.endOfDirectory(handle=plugin_handle,succeeded=True)    
 
 
@@ -159,7 +173,7 @@ def show_categories_menu(key,offset):
     else:
         found=get_cloudcasts(URL_API+key[1:len(key)-1]+'/cloudcasts/',{STR_LIMIT:limit,STR_OFFSET:offset})
         if found==limit:
-            add_folder_item(name="More...",parameters={STR_MODE:MODE_CATEGORIES,STR_KEY:key,STR_OFFSET:offset+limit})
+            add_folder_item(name=STRLOC_COMMON_MORE,parameters={STR_MODE:MODE_CATEGORIES,STR_KEY:key,STR_OFFSET:offset+limit})
     xbmcplugin.endOfDirectory(handle=plugin_handle,succeeded=True)
 
 
@@ -167,16 +181,16 @@ def show_categories_menu(key,offset):
 def show_users_menu(key,offset):
     found=get_cloudcasts(URL_API+key[1:len(key)-1]+'/cloudcasts/',{STR_LIMIT:limit,STR_OFFSET:offset})
     if found==limit:
-        add_folder_item(name="More...",parameters={STR_MODE:MODE_USERS,STR_KEY:key,STR_OFFSET:offset+limit})
+        add_folder_item(name=STRLOC_COMMON_MORE,parameters={STR_MODE:MODE_USERS,STR_KEY:key,STR_OFFSET:offset+limit})
     xbmcplugin.endOfDirectory(handle=plugin_handle,succeeded=True)
 
 
 
 def show_search_menu(key,query,offset):
     if key=='':
-        add_folder_item(name="Cloudcasts...",parameters={STR_MODE:MODE_SEARCH,STR_KEY:STR_CLOUDCAST,STR_OFFSET:0})
-        add_folder_item(name="Users...",parameters={STR_MODE:MODE_SEARCH,STR_KEY:STR_USER,STR_OFFSET:0})
-        add_folder_item(name="History",parameters={STR_MODE:MODE_SEARCH,STR_KEY:STR_HISTORY,STR_OFFSET:0})
+        add_folder_item(name=STRLOC_SEARCHMENU_CLOUDCASTS,parameters={STR_MODE:MODE_SEARCH,STR_KEY:STR_CLOUDCAST,STR_OFFSET:0})
+        add_folder_item(name=STRLOC_SEARCHMENU_USERS,parameters={STR_MODE:MODE_SEARCH,STR_KEY:STR_USER,STR_OFFSET:0})
+        add_folder_item(name=STRLOC_SEARCHMENU_HISTORY,parameters={STR_MODE:MODE_SEARCH,STR_KEY:STR_HISTORY,STR_OFFSET:0})
         xbmcplugin.endOfDirectory(handle=plugin_handle,succeeded=True)
     else:
         if key==STR_HISTORY:
@@ -193,16 +207,16 @@ def show_search_menu(key,query,offset):
                 elif key==STR_USER:
                     found=get_users(URL_SEARCH,{STR_Q:query,STR_TYPE:key,STR_LIMIT:limit,STR_OFFSET:offset})
                 if found==limit:
-                    add_folder_item(name="More...",parameters={STR_MODE:MODE_SEARCH,STR_KEY:key,STR_QUERY:query,STR_OFFSET:offset+limit})
+                    add_folder_item(name=STRLOC_COMMON_MORE,parameters={STR_MODE:MODE_SEARCH,STR_KEY:key,STR_QUERY:query,STR_OFFSET:offset+limit})
                 add_to_settinglist('search_history_list',urllib.urlencode({key:query}),'search_history_max')
                 xbmcplugin.endOfDirectory(handle=plugin_handle,succeeded=True)
 
 
 
 def show_history_menu(offset):
-    playhistmax=(1+int(__settings__.getSetting('play_history_max')))*10
-    if __settings__.getSetting('play_history_list'):
-        playhistlist=__settings__.getSetting('play_history_list').split(', ')
+    playhistmax=(1+int(__addon__.getSetting('play_history_max')))*10
+    if __addon__.getSetting('play_history_list'):
+        playhistlist=__addon__.getSetting('play_history_list').split(', ')
         while len(playhistlist)>playhistmax:
             playhistlist.pop()
         index=1
@@ -216,9 +230,9 @@ def show_history_menu(offset):
 
 
 def show_history_search_menu(offset):
-    searchhistmax=(1+int(__settings__.getSetting('search_history_max')))*10
-    if __settings__.getSetting('search_history_list'):
-        searchhistlist=__settings__.getSetting('search_history_list').split(', ')
+    searchhistmax=(1+int(__addon__.getSetting('search_history_max')))*10
+    if __addon__.getSetting('search_history_list'):
+        searchhistlist=__addon__.getSetting('search_history_list').split(', ')
         while len(searchhistlist)>searchhistmax:
             searchhistlist.pop()
         total=len(searchhistlist)
@@ -245,7 +259,8 @@ def get_cloudcasts(url,parameters):
     found=0
     if len(parameters)>0:
         url=url+'?'+urllib.urlencode(parameters)
-    print('MIXCLOUD '+'get cloudcasts '+url)
+    if debugenabled:
+        print('MIXCLOUD '+'get cloudcasts '+url)
     h=urllib2.urlopen(url)
     content=h.read()
     json_content=json.loads(content)
@@ -268,7 +283,8 @@ def get_cloudcasts(url,parameters):
 def get_cloudcast(url,parameters,index=1,total=0):
     if len(parameters)>0:
         url=url+'?'+urllib.urlencode(parameters)
-    print('MIXCLOUD '+'get cloudcast '+url)
+    if debugenabled:
+        print('MIXCLOUD '+'get cloudcast '+url)
     h=urllib2.urlopen(url)
     content=h.read()
     json_cloudcast=json.loads(content)
@@ -313,7 +329,8 @@ def add_cloudcast(index,json_cloudcast,total):
 
 def get_stream(cloudcast_key):
     ck="http://www.mixcloud.com"+cloudcast_key
-    print('MIXCLOUD '+'resolving cloudcast stream for '+ck)
+    if debugenabled:
+        print('MIXCLOUD '+'resolving cloudcast stream for '+ck)
     request = urllib2.Request('http://offliberty.com/off.php', 'track=%s&refext=' % ck)
     request.add_header('Referer', 'http://offliberty.com/')
     response = urllib2.urlopen(request)
@@ -321,8 +338,6 @@ def get_stream(cloudcast_key):
     match = re.search('HREF="(.*)" class="download"', data)
     return match.group(1)
  
-    return ''
-
 
 
 def get_categories(url):
@@ -399,16 +414,16 @@ def parameters_string_to_dict(parameters):
 
 
 def add_to_settinglist(name,value,maxname):
-    max=(1+int(__settings__.getSetting(maxname)))*10
+    max=(1+int(__addon__.getSetting(maxname)))*10
     settinglist=[]
-    if __settings__.getSetting(name):
-        settinglist=__settings__.getSetting(name).split(', ')
+    if __addon__.getSetting(name):
+        settinglist=__addon__.getSetting(name).split(', ')
     while settinglist.count(value)>0:
         settinglist.remove(value)
     settinglist.insert(0,value)
     while len(settinglist)>max:
         settinglist.pop()
-    __settings__.setSetting(name,', '.join(settinglist))
+    __addon__.setSetting(name,', '.join(settinglist))
 
 
 
@@ -418,12 +433,13 @@ offset=int(params.get(STR_OFFSET,"0"))
 key=params.get(STR_KEY,"")
 query=params.get(STR_QUERY,"")
 
-print('MIXCLOUD '+"##########################################################")
-print('MIXCLOUD '+"Mode: %s" % mode)
-print('MIXCLOUD '+"Offset: %s" % offset)
-print('MIXCLOUD '+"Key: %s" % key)
-print('MIXCLOUD '+"Query: %s" % query)
-print('MIXCLOUD '+"##########################################################")
+if debugenabled:
+    print('MIXCLOUD '+"##########################################################")
+    print('MIXCLOUD '+"Mode: %s" % mode)
+    print('MIXCLOUD '+"Offset: %s" % offset)
+    print('MIXCLOUD '+"Key: %s" % key)
+    print('MIXCLOUD '+"Query: %s" % query)
+    print('MIXCLOUD '+"##########################################################")
 
 if not sys.argv[2] or mode==MODE_HOME:
     ok=show_home_menu()

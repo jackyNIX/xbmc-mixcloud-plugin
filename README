@@ -14,11 +14,14 @@ Features:
   - Search
     - Cloudcasts
     - Users
-  - Url resolving (removing invalid streams)
-  - Thumbnails (configurable download size)
+  - Play cloudcasts
+  - Thumbnails
   - History
     - Played cloudcasts
     - Search
+  - Localisation
+    - English
+    - Dutch
 ============================================
 
 Todo:

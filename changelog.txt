@@ -1,6 +1,9 @@
 1.0.0
 - Bochi joined the project
 - Fixed streaming
+- Added debug option (disabled by default)
+- Added localisation (English, Dutch)
+- Added to official dharma repository
 
 0.4.1
 - Some bugfixes

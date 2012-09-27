@@ -12,8 +12,11 @@
         <provides>audio</provides>
   </extension>
   <extension point="xbmc.addon.metadata">
-    <platform>all</platform>
     <summary lang="en">XBMC Plugin for MixCloud</summary>
+    <summary lang="nl">XBMC Plugin voor MixCloud</summary>
     <description lang="en">Mixcloud is re-thinking radio. Listen to great radio shows, Podcasts and DJ mix sets on-demand.</description>
+    <description lang="nl">Mixcloud herdefinieerd radio. Luister naar uitstekende radioshows, podcasts en dj sets op on-demand.</description>
+    <platform>all</platform>
+	<language>en nl</language>
   </extension>
 </addon>
