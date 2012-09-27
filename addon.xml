@@ -4,7 +4,7 @@
        version="1.0.0"
        provider-name="jackyNIX/Bochi">
   <requires>
-    <import addon="xbmc.python" version="1.0"/>
+    <import addon="xbmc.python" version="2.0"/>
     <import addon="script.module.simplejson" version="2.0.10"/>
   </requires>
   <extension point="xbmc.python.pluginsource"
@@ -15,7 +15,7 @@
     <summary lang="en">XBMC Plugin for MixCloud</summary>
     <summary lang="nl">XBMC Plugin voor MixCloud</summary>
     <description lang="en">Mixcloud is re-thinking radio. Listen to great radio shows, Podcasts and DJ mix sets on-demand.</description>
-    <description lang="nl">Mixcloud herdefinieerd radio. Luister naar uitstekende radioshows, podcasts en dj sets op on-demand.</description>
+    <description lang="nl">Mixcloud herdefinieerd radio. Luister naar uitstekende radioshows, podcasts en dj sets on demand.</description>
     <platform>all</platform>
 	<language>en nl</language>
   </extension>

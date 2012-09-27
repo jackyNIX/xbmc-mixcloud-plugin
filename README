@@ -2,7 +2,7 @@
 XBMC Mixcloud Plugin - jackyNIX/Bochi
 ============================================
 
-Current version: 1.0.0 dharma
+Current version: 1.0.0 eden
 ============================================
 
 Features:
@@ -26,5 +26,4 @@ Features:
 
 Todo:
   - Foolproof error handling
-  - Python 2.0 migration (eden)
 ============================================  

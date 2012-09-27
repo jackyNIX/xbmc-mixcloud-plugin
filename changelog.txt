@@ -4,6 +4,7 @@
 - Added debug option (disabled by default)
 - Added localisation (English, Dutch)
 - Added to official dharma repository
+- Added compatibility to eden python engine
 
 0.4.1
 - Some bugfixes
