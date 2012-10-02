@@ -2,7 +2,8 @@
 XBMC Mixcloud Plugin - jackyNIX/Bochi
 ============================================
 
-Current version: 1.0.0 eden
+Current version: 1.0.1 eden
+
 ============================================
 
 Features:
@@ -22,8 +23,11 @@ Features:
   - Localisation
     - English
     - Dutch
+    - French
+
 ============================================
 
 Todo:
   - Foolproof error handling
+
 ============================================  
