@@ -21,6 +21,6 @@
     <description lang="fr">Mixcloud redéfinit la radio. Écoutez les émissions radio, podcasts et mixes DJ sur demande.</description>
     <description lang="de">Mixcloud erfindet Radio neu. Höre Radioshows, Podcasts und DJ Mixe wann immer Du willst.</description>
     <platform>all</platform>
-    <language>en nl fr de</language>
+    <language></language>
   </extension>
 </addon>
