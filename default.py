@@ -333,8 +333,18 @@ def get_stream(cloudcast_key):
         print('MIXCLOUD '+'resolving cloudcast stream for '+ck)
     for retry in range(1, 10):
 #        request = urllib2.Request('http://offliberty.com/off.php', 'track=%s&refext=' % ck)
-        request = urllib2.Request('http://offliberty.com/off54.php', 'track=%s&refext=' % ck)
-        request.add_header('Referer', 'http://offliberty.com/')
+#        request = urllib2.Request('http://offliberty.com/off54.php', 'track=%s&refext=' % ck)
+#        request.add_header('Referer', 'http://offliberty.com/')
+        values={
+                'track' : ck,
+                'refext' : ''
+               }
+        headers={
+                 'User-Agent' : 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.27 Safari/537.36',
+                 'Referer' : 'http://offliberty.com/'
+                }
+        postdata = urllib.urlencode(values)
+        request = urllib2.Request('http://offliberty.com/off54.php', postdata, headers, 'http://offliberty.com/')
         response = urllib2.urlopen(request)
         data=response.read()
         match=re.search('HREF="(.*)" class="download"', data)
