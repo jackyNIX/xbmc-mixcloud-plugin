@@ -1,3 +1,6 @@
+1.1.2
+- Fixed playback of incorrect tracks (tnx to SilentException)
+
 1.1.1
 - Modified getstream url
 
