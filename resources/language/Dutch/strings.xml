@@ -3,6 +3,7 @@
 	<!-- common -->
 	<string id="30000">Mixcloud</string>
 	<string id="30001">Meer...</string>
+	<string id="30002">Resolven url mislukt. Gebruik andere resolver?</string>
 	<!-- main menu -->
 	<string id="30100">Hot</string>
 	<string id="30101">Nieuw</string>

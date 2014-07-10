@@ -110,11 +110,12 @@ __addon__ =xbmcaddon.Addon('plugin.audio.mixcloud')
 debugenabled=(__addon__.getSetting('debug')=='true')
 limit=       (1+int(__addon__.getSetting('page_limit')))*10
 thumb_size=  STR_THUMB_SIZES[int(__addon__.getSetting('thumb_size'))]
-resolver=    int(__addon__.getSetting('resolver'))
+resolverid=  int(__addon__.getSetting('resolver'))
 
 
 
 STRLOC_COMMON_MORE=          __addon__.getLocalizedString(30001)
+STRLOC_COMMON_RESOLVER_ERROR=__addon__.getLocalizedString(30002)
 STRLOC_MAINMENU_HOT=         __addon__.getLocalizedString(30100)
 STRLOC_MAINMENU_NEW=         __addon__.getLocalizedString(30101)
 STRLOC_MAINMENU_POPULAR=     __addon__.getLocalizedString(30102)
@@ -410,9 +411,30 @@ def get_stream_local(cloudcast_key):
 
 
 def get_stream(cloudcast_key):
+    global resolverid
+    if debugenabled:
+        print('resolverid=%s' % (resolverid))
+    resolverid_orig=resolverid
+
     resolvers={Resolver.local : get_stream_local,
                Resolver.offliberty : get_stream_offliberty}
-    return resolvers[resolver](cloudcast_key)
+    strm=resolvers[resolverid](cloudcast_key)
+
+    dialog=xbmcgui.Dialog()
+    while (not strm) and dialog.yesno('MixCloud',STRLOC_COMMON_RESOLVER_ERROR):
+        if debugenabled:
+            print('changing resolver')
+		
+        resolverid=resolverid+1
+        if resolverid>Resolver.offliberty:
+            resolverid=Resolver.local
+        if resolverid==resolverid_orig:
+            break
+        strm=resolvers[resolverid](cloudcast_key)
+        if strm:
+            __addon__.setSetting('resolver',str(resolverid))
+
+    return strm
 
 
 
