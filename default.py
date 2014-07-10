@@ -394,7 +394,7 @@ def get_stream_local(cloudcast_key):
     request = urllib2.Request(ck, headers=headers, origin_req_host=URL_MIXCLOUD)
     response = urllib2.urlopen(request)
     data=response.read()
-    match=re.search('m-p-ref="x_cloudcast_page" m-play-info="(.*)" m-preview', data)
+    match=re.search('m-p-ref="cloudcast_page" m-play-info="(.*)" m-preview', data)
     if match:
         playInfo=base64.b64decode(match.group(1))
         magicString=base64.b64decode('cGxlYXNlZG9udGRvd25sb2Fkb3VybXVzaWN0aGVhcnRpc3Rzd29udGdldHBhaWQ=')
