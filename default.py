@@ -55,8 +55,11 @@ MODE_HISTORY=   13
 MODE_JACKYNIX=  14
 MODE_CATEGORIES=20
 MODE_USERS=     21
+MODE_FOLLOWED=  22
 MODE_SEARCH=    30
 MODE_PLAY=      40
+MODE_FOLLOW=    50
+MODE_UNFOLLOW=  51
 
 
 
@@ -125,11 +128,34 @@ STRLOC_MAINMENU_CATEGORIES=  __addon__.getLocalizedString(30103)
 STRLOC_MAINMENU_SEARCH=      __addon__.getLocalizedString(30104)
 STRLOC_MAINMENU_HISTORY=     __addon__.getLocalizedString(30105)
 STRLOC_MAINMENU_JACKYNIX=    __addon__.getLocalizedString(30106)
+STRLOC_MAINMENU_FOLLOWED=    __addon__.getLocalizedString(30107)
 STRLOC_SEARCHMENU_CLOUDCASTS=__addon__.getLocalizedString(30110)
 STRLOC_SEARCHMENU_USERS=     __addon__.getLocalizedString(30111)
 STRLOC_SEARCHMENU_HISTORY=   __addon__.getLocalizedString(30112)
+STRLOC_CONTEXTMENU_FOLLOW=   __addon__.getLocalizedString(30300)
+STRLOC_CONTEXTMENU_UNFOLLOW= __addon__.getLocalizedString(30301)
 
+def _followed_users():
+    if __addon__.getSetting('followed'):
+        try:
+            data = json.loads(__addon__.getSetting('followed'))
+            return data
+        except:
+            return {}
+    return {}
 
+def _add_followed(username, path):
+
+    followed = _followed_users()
+    if not followed.has_key(username):
+        followed[username] = path
+    __addon__.setSetting('followed', json.dumps(followed))
+
+def _remove_followed(username):
+    followed = _followed_users()
+    if followed.has_key(username):
+        del followed[username]
+    __addon__.setSetting('followed', json.dumps(followed))
 
 def add_audio_item(infolabels,parameters={},img='',total=0):
     listitem=xbmcgui.ListItem(infolabels[STR_TITLE],infolabels[STR_ARTIST],iconImage=img,thumbnailImage=img)
@@ -138,6 +164,29 @@ def add_audio_item(infolabels,parameters={},img='',total=0):
     url=sys.argv[0]+'?'+urllib.urlencode(parameters)
     xbmcplugin.addDirectoryItem(plugin_handle,url,listitem,isFolder=False,totalItems=total)
 
+
+def add_user_item(name,infolabels={},parameters={},img=''):
+    if not infolabels:
+        infolabels={STR_TITLE:name}
+    listitem=xbmcgui.ListItem(name,iconImage=img,thumbnailImage=img)
+    listitem.setInfo('Music',infolabels)
+
+    commands = []
+    scriptPath = "special://home/addons/plugin.audio.mixcloud/default.py, %d, " % plugin_handle
+    if _followed_users().has_key(name):
+        unfollowParams = {STR_MODE:MODE_UNFOLLOW,STR_KEY:parameters[STR_KEY],STR_NAME:name.encode('ascii', 'replace')}
+        unfollowURL = scriptPath+"?"+urllib.urlencode(unfollowParams)
+        commands = [( STRLOC_CONTEXTMENU_UNFOLLOW, "XBMC.RunScript(%s)" % unfollowURL )]
+    else:
+        followParams = {STR_MODE:MODE_FOLLOW,STR_KEY:parameters[STR_KEY],STR_NAME:name.encode('ascii', 'replace')}
+        followURL = scriptPath +"?"+urllib.urlencode(followParams)
+        commands = [( STRLOC_CONTEXTMENU_FOLLOW, "XBMC.RunScript(%s)" % followURL )]
+
+    listitem.addContextMenuItems( commands )
+    url=sys.argv[0]+'?'+urllib.urlencode(parameters)
+    if debugenabled:
+            print("Normal URL: %s", url)
+    return xbmcplugin.addDirectoryItem(handle=plugin_handle,url=url,listitem=listitem,isFolder=True)
 
 
 def add_folder_item(name,infolabels={},parameters={},img=''):
@@ -157,6 +206,7 @@ def show_home_menu():
     add_folder_item(name=STRLOC_MAINMENU_CATEGORIES,parameters={STR_MODE:MODE_CATEGORIES,STR_OFFSET:0})
     add_folder_item(name=STRLOC_MAINMENU_SEARCH,parameters={STR_MODE:MODE_SEARCH})
     add_folder_item(name=STRLOC_MAINMENU_HISTORY,parameters={STR_MODE:MODE_HISTORY})
+    add_folder_item(name=STRLOC_MAINMENU_FOLLOWED,parameters={STR_MODE:MODE_FOLLOWED})
     add_folder_item(name=STRLOC_MAINMENU_JACKYNIX,parameters={STR_MODE:MODE_JACKYNIX})
     xbmcplugin.endOfDirectory(handle=plugin_handle,succeeded=True)
 
@@ -246,6 +296,12 @@ def show_history_menu(offset):
                 index=index+1
     xbmcplugin.endOfDirectory(handle=plugin_handle,succeeded=True)
 
+
+def show_followed_menu(offset):
+    print _followed_users()
+    for username, path in _followed_users().iteritems():
+        add_user_item(name=username,parameters={STR_MODE:MODE_USERS,STR_KEY:path})
+    xbmcplugin.endOfDirectory(handle=plugin_handle,succeeded=True)
 
 
 def show_jackynix_menu(offset):
@@ -504,7 +560,7 @@ def get_users(url,parameters):
                     json_pictures=json_user[STR_PICTURES]
                     if thumb_size in json_pictures and json_pictures[thumb_size]:
                         json_thumbnail=json_pictures[thumb_size]
-                add_folder_item(name=json_name,parameters={STR_MODE:MODE_USERS,STR_KEY:json_key},img=json_thumbnail)
+                add_user_item(name=json_name,parameters={STR_MODE:MODE_USERS,STR_KEY:json_key},img=json_thumbnail)
                 found=found+1
     return found
 
@@ -546,13 +602,18 @@ def add_to_settinglist(name,value,maxname):
     __addon__.setSetting(name,', '.join(settinglist))
 
 
+def follow_user(name, key):
+    _add_followed(urllib.unquote_plus(name), key)
+
+def unfollow_user(name):
+    _remove_followed(urllib.unquote_plus(name))
 
 params=parameters_string_to_dict(urllib.unquote(sys.argv[2]))
 mode=int(params.get(STR_MODE,"0"))
 offset=int(params.get(STR_OFFSET,"0"))
 key=params.get(STR_KEY,"")
 query=params.get(STR_QUERY,"")
-
+name=params.get(STR_NAME, "")
 if debugenabled:
     print('MIXCLOUD '+"##########################################################")
     print('MIXCLOUD '+"Mode: %s" % mode)
@@ -577,7 +638,13 @@ elif mode==MODE_SEARCH:
     ok=show_search_menu(key,query,offset)
 elif mode==MODE_HISTORY:
     ok=show_history_menu(offset)
+elif mode==MODE_FOLLOWED:
+    ok=show_followed_menu(offset)
 elif mode==MODE_JACKYNIX:
     ok=show_jackynix_menu(offset)
 elif mode==MODE_PLAY:
     ok=play_cloudcast(key)
+elif mode==MODE_FOLLOW:
+    ok=follow_user(name, key)
+elif mode==MODE_UNFOLLOW:
+    ok=unfollow_user(name)
