@@ -12,6 +12,7 @@
 	<string id="30104">Search</string>
 	<string id="30105">History</string>
 	<string id="30106">jackyNIX's cloudcasts (shameless plug :p)</string>
+    <string id="30107">Followed</string>
 	<!-- search menu -->
 	<string id="30110">Cloudcasts...</string>
 	<string id="30111">Users...</string>
@@ -26,4 +27,7 @@
 	<string id="30220">History</string>
 	<string id="30221">Maximum played cloudcasts</string>
 	<string id="30222">Maximum searches</string>
+    <!-- Context Menu -->
+    <string id="30300">Follow</string>
+    <string id="30301">Unfollow</string>
 </strings>
