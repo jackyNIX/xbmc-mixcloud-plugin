@@ -52,7 +52,6 @@ URL_JACKYNIX=    'http://api.mixcloud.com/jackyNIX/'
 URL_STREAM=      'http://www.mixcloud.com/api/1/cloudcast/{0}.json?embed_type=cloudcast'
 URL_FAVORITE=    'https://api.mixcloud.com{0}/favorite/'
 URL_FOLLOW=      'https://api.mixcloud.com{0}/follow/'
-#URL_TOKEN=       'https://www.mixcloud.com/oauth/access_token?client_id=Vef7HWkSjCzEFvdhet&redirect_uri=http://forum.kodi.tv/showthread.php?tid=116386&client_secret=VK7hwemnZWBexDbnVZqXLapVbPK3FFYT&code='
 URL_TOKEN=       'https://www.mixcloud.com/oauth/access_token'
 
 
@@ -370,15 +369,11 @@ def check_profile_state():
 
     # ask for code if no token provided yet
     if not access_token:
-        if debugenabled:
-            print('MIXCLOUD No access_token found')
+        log_if_debug('No access_token found')
         ask=True
         while ask:
             ask=xbmcgui.Dialog().ok('Mixcloud',STRLOC_COMMON_TOKEN_ERROR,STRLOC_COMMON_AUTH_CODE)
             if ask:
-#                __addon__.openSettings()
-#                oath_code=__addon__.getSetting('oath_code')
-
                 oath_code=get_query(oath_code)
                 __addon__.setSetting('oath_code',oath_code)
                 __addon__.setSetting('access_token','')
@@ -395,23 +390,20 @@ def check_profile_state():
                                  'Referer' : 'http://offliberty.com/'
                                 }
                         postdata = urllib.urlencode(values)
-                        if debugenabled:
-                            print('MIXCLOUD getting access token ' + URL_TOKEN + '?' + postdata)
+                        log_if_debug('Getting access token ' + URL_TOKEN + '?' + postdata)
                         request = urllib2.Request('https://www.mixcloud.com/oauth/access_token', postdata, headers, 'https://www.mixcloud.com/')
                         h = urllib2.urlopen(request)
                         content=h.read()
                         json_content=json.loads(content)
                         if STR_ACCESS_TOKEN in json_content and json_content[STR_ACCESS_TOKEN] :
-                            if debugenabled:
-                                print('MIXCLOUD Access_token received')
+                            log_if_debug('Access_token received')
                             access_token=json_content[STR_ACCESS_TOKEN]
                             __addon__.setSetting('access_token',access_token)
                         else:
-                            if debugenabled:
-                                print('MIXCLOUD No access_token received')
-                                print json_content
+                            log_if_debug('No access_token received')
+                            log_if_debug(json_content)
                     except:
-                        print('MIXCLOUD oath_code failed error=%s' % (sys.exc_info()[1]))
+                        log_always('oath_code failed error=%s' % (sys.exc_info()[1]))
 
                 ask=(access_token=='')
 
@@ -448,11 +440,9 @@ def play_cloudcast(key):
         _listitem.setInfo(type='Music',infoLabels=_infolabels)
         xbmcplugin.setResolvedUrl(handle=plugin_handle,succeeded=True,listitem=_listitem)
         add_to_settinglist('play_history_list',key,'play_history_max')
-        if debugenabled:
-            print('MIXCLOUD playing '+url)
+        log_if_debug('Playing '+url)
     else:
-        if debugenabled:
-            print('MIXCLOUD '+'stop player')
+        log_if_debug('Stop player')
         xbmcplugin.setResolvedUrl(handle=plugin_handle,succeeded=False,listitem=xbmcgui.ListItem())
 
 
@@ -461,8 +451,7 @@ def get_cloudcasts(url,parameters):
     found=0
     if len(parameters)>0:
         url=url+'?'+urllib.urlencode(parameters)
-    if debugenabled:
-        print('MIXCLOUD '+'get cloudcasts '+url)
+    log_if_debug('Get cloudcasts '+url)
     h=urllib2.urlopen(url)
     content=h.read()
     json_content=json.loads(content)
@@ -489,15 +478,14 @@ def get_cloudcasts(url,parameters):
 def get_cloudcast(url,parameters,index=1,total=0,forinfo=False):
     if len(parameters)>0:
         url=url+'?'+urllib.urlencode(parameters)
-    if debugenabled:
-        print('MIXCLOUD '+'get cloudcast '+url)
+    log_if_debug('Get cloudcast '+url)
     try:
         h=urllib2.urlopen(url)
         content=h.read()
         json_cloudcast=json.loads(content)
         return add_cloudcast(index,json_cloudcast,total,forinfo)
     except:
-        print('MIXCLOUD get cloudcast failed error=%s' % (sys.exc_info()[1]))
+        log_always('Get cloudcast failed error=%s' % (sys.exc_info()[1]))
     return {}
 
 
@@ -557,13 +545,9 @@ def add_cloudcast(index,json_cloudcast,total,forinfo=False):
 
 def get_stream_offliberty(cloudcast_key):
     ck=URL_MIXCLOUD[:-1]+cloudcast_key
-    if debugenabled:
-        print('MIXCLOUD '+'resolving offliberty cloudcast stream for '+ck)
+    log_if_debug('Resolving offliberty cloudcast stream for '+ck)
     for retry in range(1, 10):
         try:
-#        request = urllib2.Request('http://offliberty.com/off.php', 'track=%s&refext=' % ck)
-#        request = urllib2.Request('http://offliberty.com/off54.php', 'track=%s&refext=' % ck)
-#        request.add_header('Referer', 'http://offliberty.com/')
             values={
                     'track' : ck,
                     'refext' : ''
@@ -579,18 +563,16 @@ def get_stream_offliberty(cloudcast_key):
             match=re.search('HREF="(.*)" class="download"', data)
             if match:
                 return match.group(1)
-            elif debugenabled:
-                print('MIXCLOUD '+'wrong response try=%s code=%s len=%s, trying again...' % (retry, response.getcode(), len(data)))
+            else:
+                log_if_debug('Wrong response try=%s code=%s len=%s, trying again...' % (retry, response.getcode(), len(data)))
         except:
-            if debugenabled:
-                print('MIXCLOUD '+'unexpected error try=%s error=%s, trying again...' % (retry, sys.exc_info()[0]))
+            log_always('Unexpected error try=%s error=%s, trying again...' % (retry, sys.exc_info()[0]))
 
 
 
 def get_stream_local(cloudcast_key):
     ck=URL_MIXCLOUD[:-1]+cloudcast_key
-    if debugenabled:
-        print('MIXCLOUD '+'locally resolving cloudcast stream for '+ck)
+    log_if_debug('Locally resolving cloudcast stream for '+ck)
     headers={
              'User-Agent' : 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.27 Safari/537.36',
              'Referer' : URL_MIXCLOUD
@@ -601,28 +583,25 @@ def get_stream_local(cloudcast_key):
     match=re.search('m-p-ref="cloudcast_page" m-play-info="(.*)" m-preview=', data)
     if match:
         try:
-            if debugenabled:
-                print('MIXCLOUD '+'decoding '+match.group(1))
+            log_if_debug('Decoding '+match.group(1))
             playInfo=base64.b64decode(match.group(1))
             magicString=base64.b64decode('cGxlYXNlZG9udGRvd25sb2Fkb3VybXVzaWN0aGVhcnRpc3Rzd29udGdldHBhaWQ=')
             playInfoJSON=''.join(chr(ord(a) ^ ord(b)) for a,b in zip(playInfo,cycle(magicString)))
             json_content=json.loads(playInfoJSON)
             if STR_STREAMURL in json_content and json_content[STR_STREAMURL]:
                 return json_content[STR_STREAMURL]
-            elif debugenabled:
-                print('MIXCLOUD '+'unable to resolve (content)')
+            else:
+                log_if_debug('Unable to resolve (content)')
         except:
-            if debugenabled:
-                print('MIXCLOUD '+'unexpected error resolving local error=%s' % (sys.exc_info()[0]))
-    elif debugenabled:
-        print('MIXCLOUD '+'unable to resolve (match)')
+            log_always('Unexpected error resolving local error=%s' % (sys.exc_info()[0]))
+    else:
+        log_if_debug('Unable to resolve (match)')
 
 
 
 def get_stream(cloudcast_key):
     global resolverid
-    if debugenabled:
-        print('MIXCLOUD '+'resolverid=%s' % (resolverid))
+    log_if_debug('Resolverid=%s' % (resolverid))
     resolverid_orig=resolverid
 
     resolvers={Resolver.local : get_stream_local,
@@ -630,13 +609,11 @@ def get_stream(cloudcast_key):
     strm=resolvers[resolverid](cloudcast_key)
 
     if not strm:
-        if debugenabled:
-            print('MIXCLOUD '+'cannot solve using preferred resolver')
+        log_if_debug('Cannot solve using preferred resolver')
         dialog=xbmcgui.Dialog()
 
         while (not strm) and dialog.yesno('MixCloud',STRLOC_COMMON_RESOLVER_ERROR):
-            if debugenabled:
-                print('MIXCLOUD '+'changing resolver')
+            log_if_debug('Changing resolver')
 		    
             resolverid=resolverid+1
             if resolverid>Resolver.offliberty:
@@ -724,8 +701,7 @@ def get_users(url,parameters):
 
 def favoritefollow(urltmp,key,action):
     url=urltmp.replace('{0}',key)+"?"+urllib.urlencode({STR_ACCESS_TOKEN:access_token})
-    if debugenabled:
-        print action + ': ' + url
+    log_if_debug(action + ': ' + url)
     opener = urllib2.build_opener(urllib2.HTTPHandler)
     request = urllib2.Request(url, data='none')
     request.get_method = lambda: action
@@ -741,8 +717,7 @@ def favoritefollow(urltmp,key,action):
                 json_info=json_info+'\nFAILED!'
     if json_info=='':
         json_info='Unknown error occured.'
-        if debugenabled:
-            print data
+        log_if_debug(data)
     xbmcgui.Dialog().ok('Mixcloud',json_info)
     return ''
 
@@ -788,7 +763,18 @@ def add_to_settinglist(name,value,maxname):
         settinglist.pop()
     __addon__.setSetting(name,', '.join(settinglist))
 
-    
+
+
+def log_if_debug(message):
+    if debugenabled:
+        xbmc.log(msg='MIXCLOUD '+message,level=xbmc.LOGDEBUG)
+
+
+
+def log_always(message):
+    xbmc.log(msg='MIXCLOUD '+message,level=xbmc.LOGERROR)
+
+
 
 params=parameters_string_to_dict(urllib.unquote(sys.argv[2]))
 mode=int(params.get(STR_MODE,"0"))
@@ -796,13 +782,12 @@ offset=int(params.get(STR_OFFSET,"0"))
 key=params.get(STR_KEY,"")
 query=params.get(STR_QUERY,"")
 
-if debugenabled:
-    print('MIXCLOUD '+"##########################################################")
-    print('MIXCLOUD '+"Mode: %s" % mode)
-    print('MIXCLOUD '+"Offset: %s" % offset)
-    print('MIXCLOUD '+"Key: %s" % key)
-    print('MIXCLOUD '+"Query: %s" % query)
-    print('MIXCLOUD '+"##########################################################")
+log_if_debug("##########################################################")
+log_if_debug("Mode: %s" % mode)
+log_if_debug("Offset: %s" % offset)
+log_if_debug("Key: %s" % key)
+log_if_debug("Query: %s" % query)
+log_if_debug("##########################################################")
 	
 if not sys.argv[2] or mode==MODE_HOME:
     ok=show_home_menu()
