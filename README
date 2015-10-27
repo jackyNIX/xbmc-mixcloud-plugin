@@ -5,17 +5,17 @@ KODI Mixcloud Plugin - jackyNIX
 ============================================
 
 Contributors:
-	-	jackyNIX
-	-	Bochi
-	-	SilentException
-	-	fleshgolem
+  - jackyNIX
+  - Bochi
+  - SilentException
+  - fleshgolem
 
 ============================================
 
 Current version: 2.1.0
-	-	Isengard
-	-	Helix
-	-	Gotham
+  - Isengard
+  - Helix
+  - Gotham
 
 ============================================
 
@@ -37,7 +37,7 @@ Features:
     - Users
   - Play cloudcasts
     - Local resolver
-	- Offliberty resolver
+    - Offliberty resolver
   - Thumbnails
   - History
     - Played cloudcasts
