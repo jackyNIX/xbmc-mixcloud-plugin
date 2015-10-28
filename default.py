@@ -47,6 +47,7 @@ URL_FOLLOWINGS=  'https://api.mixcloud.com/me/following/'
 URL_FOLLOWERS=   'https://api.mixcloud.com/me/followers/'
 URL_LISTENS=     'https://api.mixcloud.com/me/listens/'
 URL_UPLOADS=     'https://api.mixcloud.com/me/cloudcasts/'
+URL_LISTENLATER= 'https://api.mixcloud.com/me/listen-later/'
 URL_PLAYLISTS=   'https://api.mixcloud.com/me/playlists/'
 URL_JACKYNIX=    'http://api.mixcloud.com/jackyNIX/'
 URL_STREAM=      'http://www.mixcloud.com/api/1/cloudcast/{0}.json?embed_type=cloudcast'
@@ -69,6 +70,7 @@ MODE_UPLOADS=     18
 MODE_PLAYLISTS=   19
 MODE_CATEGORIES=  20
 MODE_USERS=       21
+MODE_LISTENLATER= 22
 MODE_SEARCH=      30
 MODE_PLAY=        40
 MODE_ADDFAVORITE= 50
@@ -168,6 +170,7 @@ STRLOC_SEARCHMENU_USERS=        __addon__.getLocalizedString(30111)
 STRLOC_SEARCHMENU_HISTORY=      __addon__.getLocalizedString(30112)
 STRLOC_MAINMENU_UPLOADS=        __addon__.getLocalizedString(30113)
 STRLOC_MAINMENU_PLAYLISTS=      __addon__.getLocalizedString(30114)
+STRLOC_MAINMENU_LISTENLATER=    __addon__.getLocalizedString(30115)
 STRLOC_CONTEXTMENU_ADDFAVORITE= __addon__.getLocalizedString(30120)
 STRLOC_CONTEXTMENU_DELFAVORITE= __addon__.getLocalizedString(30121)
 STRLOC_CONTEXTMENU_ADDFOLLOWING=__addon__.getLocalizedString(30122)
@@ -216,6 +219,7 @@ def show_home_menu():
         add_folder_item(name=STRLOC_MAINMENU_LISTENS,parameters={STR_MODE:MODE_LISTENS},img=get_icon('yourlistens.png'))
         add_folder_item(name=STRLOC_MAINMENU_UPLOADS,parameters={STR_MODE:MODE_UPLOADS},img=get_icon('youruploads.png'))
         add_folder_item(name=STRLOC_MAINMENU_PLAYLISTS,parameters={STR_MODE:MODE_PLAYLISTS},img=get_icon('yourplaylists.png'))
+        add_folder_item(name=STRLOC_MAINMENU_LISTENLATER,parameters={STR_MODE:MODE_LISTENLATER},img=get_icon('listenlater.png'))
     add_folder_item(name=STRLOC_MAINMENU_HOT,parameters={STR_MODE:MODE_HOT,STR_OFFSET:0},img=get_icon('hot.png'))
     add_folder_item(name=STRLOC_MAINMENU_CATEGORIES,parameters={STR_MODE:MODE_CATEGORIES,STR_OFFSET:0},img=get_icon('categories.png'))
     add_folder_item(name=STRLOC_MAINMENU_SEARCH,parameters={STR_MODE:MODE_SEARCH},img=get_icon('search.png'))
@@ -294,6 +298,15 @@ def show_uploads_menu(offset):
         found=get_cloudcasts(URL_UPLOADS,{STR_ACCESS_TOKEN:access_token,STR_LIMIT:limit,STR_OFFSET:offset})
         if found==limit:
             add_folder_item(name=STRLOC_COMMON_MORE,parameters={STR_MODE:MODE_UPLOADS,STR_OFFSET:offset+limit})
+    xbmcplugin.endOfDirectory(handle=plugin_handle,succeeded=True)
+
+
+
+def show_listenlater_menu(offset):
+    if check_profile_state():
+        found=get_cloudcasts(URL_LISTENLATER,{STR_ACCESS_TOKEN:access_token,STR_LIMIT:limit,STR_OFFSET:offset})
+        if found==limit:
+            add_folder_item(name=STRLOC_COMMON_MORE,parameters={STR_MODE:MODE_LISTENLATER,STR_OFFSET:offset+limit})
     xbmcplugin.endOfDirectory(handle=plugin_handle,succeeded=True)
 
 
@@ -803,6 +816,8 @@ elif mode==MODE_LISTENS:
     ok=show_listens_menu(offset)
 elif mode==MODE_UPLOADS:
     ok=show_uploads_menu(offset)
+elif mode==MODE_LISTENLATER:
+    ok=show_listenlater_menu(offset)
 elif mode==MODE_PLAYLISTS:
     ok=show_playlists_menu(key,offset)
 elif mode==MODE_HOT:

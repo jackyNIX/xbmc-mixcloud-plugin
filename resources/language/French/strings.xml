@@ -7,7 +7,7 @@
 	<string id="30003">Access token (valide) introuvable.</string>
 	<string id="30004">Introduisez votre code d'autorisation.</string>
 	<!-- main menu -->
-	<string id="30100">Hot</string>
+	<string id="30100">Tendences</string>
 	<string id="30101">Votre Favoris</string>
 	<string id="30102">Votre Followings</string>
 	<string id="30103">Catégories</string>
@@ -19,6 +19,7 @@
 	<string id="30109">Votre Listens</string>
 	<string id="30113">Votre Uploads</string>
 	<string id="30114">Votre Playlists</string>
+	<string id="30115">Ecouter Plus Tard</string>
 	<!-- search menu -->
 	<string id="30110">Cloudcasts...</string>
 	<string id="30111">Utilisateurs...</string>

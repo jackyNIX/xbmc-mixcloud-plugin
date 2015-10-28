@@ -7,7 +7,7 @@
 	<string id="30003">Geen (geldig) access token gevonden.</string>
 	<string id="30004">Gelieve uw authenticatie code in te geven.</string>
 	<!-- main menu -->
-	<string id="30100">Hot</string>
+	<string id="30100">Trending</string>
 	<string id="30101">Uw Favorieten</string>
 	<string id="30102">Uw Followings</string>
 	<string id="30103">Categorieën</string>
@@ -19,6 +19,7 @@
 	<string id="30109">Uw Listens</string>
 	<string id="30113">Uw Uploads</string>
 	<string id="30114">Uw Playlists</string>
+	<string id="30115">Later Beluisteren</string>
 	<!-- search menu -->
 	<string id="30110">Cloudcasts...</string>
 	<string id="30111">Gebruikers...</string>
