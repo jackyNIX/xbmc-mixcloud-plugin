@@ -71,6 +71,7 @@ MODE_PLAYLISTS=   19
 MODE_CATEGORIES=  20
 MODE_USERS=       21
 MODE_LISTENLATER= 22
+MODE_LOGIN=       23
 MODE_SEARCH=      30
 MODE_PLAY=        40
 MODE_ADDFAVORITE= 50
@@ -146,7 +147,6 @@ thumb_size=  STR_THUMB_SIZES[int(__addon__.getSetting('thumb_size'))]
 resolverid=  int(__addon__.getSetting('resolver'))
 oath_code=   __addon__.getSetting('oath_code')
 access_token=__addon__.getSetting('access_token')
-useaccount=  (__addon__.getSetting('use_account')=='true')
 ext_info=    (__addon__.getSetting('ext_info')=='true')
 
 
@@ -165,16 +165,19 @@ STRLOC_MAINMENU_JACKYNIX=       __addon__.getLocalizedString(30106)
 STRLOC_MAINMENU_FEED=           __addon__.getLocalizedString(30107)
 STRLOC_MAINMENU_FOLLOWERS=      __addon__.getLocalizedString(30108)
 STRLOC_MAINMENU_LISTENS=        __addon__.getLocalizedString(30109)
-STRLOC_SEARCHMENU_CLOUDCASTS=   __addon__.getLocalizedString(30110)
-STRLOC_SEARCHMENU_USERS=        __addon__.getLocalizedString(30111)
-STRLOC_SEARCHMENU_HISTORY=      __addon__.getLocalizedString(30112)
 STRLOC_MAINMENU_UPLOADS=        __addon__.getLocalizedString(30113)
 STRLOC_MAINMENU_PLAYLISTS=      __addon__.getLocalizedString(30114)
 STRLOC_MAINMENU_LISTENLATER=    __addon__.getLocalizedString(30115)
-STRLOC_CONTEXTMENU_ADDFAVORITE= __addon__.getLocalizedString(30120)
-STRLOC_CONTEXTMENU_DELFAVORITE= __addon__.getLocalizedString(30121)
-STRLOC_CONTEXTMENU_ADDFOLLOWING=__addon__.getLocalizedString(30122)
-STRLOC_CONTEXTMENU_DELFOLLOWING=__addon__.getLocalizedString(30123)
+STRLOC_MAINMENU_LOGIN=          __addon__.getLocalizedString(30116)
+
+STRLOC_SEARCHMENU_CLOUDCASTS=   __addon__.getLocalizedString(30200)
+STRLOC_SEARCHMENU_USERS=        __addon__.getLocalizedString(30201)
+STRLOC_SEARCHMENU_HISTORY=      __addon__.getLocalizedString(30202)
+
+STRLOC_CONTEXTMENU_ADDFAVORITE= __addon__.getLocalizedString(30300)
+STRLOC_CONTEXTMENU_DELFAVORITE= __addon__.getLocalizedString(30301)
+STRLOC_CONTEXTMENU_ADDFOLLOWING=__addon__.getLocalizedString(30302)
+STRLOC_CONTEXTMENU_DELFOLLOWING=__addon__.getLocalizedString(30303)
 
 
 
@@ -211,7 +214,7 @@ def add_folder_item(name,infolabels={},parameters={},img=''):
 
 
 def show_home_menu():
-    if useaccount:
+    if access_token<>'':
 #        add_folder_item(name=STRLOC_MAINMENU_FEED,parameters={STR_MODE:MODE_FEED})
         add_folder_item(name=STRLOC_MAINMENU_FOLLOWINGS,parameters={STR_MODE:MODE_FOLLOWINGS},img=get_icon('yourfollowings.png'))
         add_folder_item(name=STRLOC_MAINMENU_FOLLOWERS,parameters={STR_MODE:MODE_FOLLOWERS},img=get_icon('yourfollowers.png'))
@@ -220,6 +223,8 @@ def show_home_menu():
         add_folder_item(name=STRLOC_MAINMENU_UPLOADS,parameters={STR_MODE:MODE_UPLOADS},img=get_icon('youruploads.png'))
         add_folder_item(name=STRLOC_MAINMENU_PLAYLISTS,parameters={STR_MODE:MODE_PLAYLISTS},img=get_icon('yourplaylists.png'))
         add_folder_item(name=STRLOC_MAINMENU_LISTENLATER,parameters={STR_MODE:MODE_LISTENLATER},img=get_icon('listenlater.png'))
+    else:
+        add_folder_item(name=STRLOC_MAINMENU_LOGIN,parameters={STR_MODE:MODE_LOGIN})
     add_folder_item(name=STRLOC_MAINMENU_HOT,parameters={STR_MODE:MODE_HOT,STR_OFFSET:0},img=get_icon('hot.png'))
     add_folder_item(name=STRLOC_MAINMENU_CATEGORIES,parameters={STR_MODE:MODE_CATEGORIES,STR_OFFSET:0},img=get_icon('categories.png'))
     add_folder_item(name=STRLOC_MAINMENU_SEARCH,parameters={STR_MODE:MODE_SEARCH},img=get_icon('search.png'))
@@ -804,6 +809,9 @@ log_if_debug("##########################################################")
 	
 if not sys.argv[2] or mode==MODE_HOME:
     ok=show_home_menu()
+if mode==MODE_LOGIN:
+    check_profile_state()
+    ok=show_home_menu()
 elif mode==MODE_FEED:
     ok=show_feed_menu(offset)
 elif mode==MODE_FAVORITES:
@@ -844,3 +852,4 @@ elif mode==MODE_ADDFOLLOWING:
 elif mode==MODE_DELFOLLOWING:
     ok=favoritefollow(URL_FOLLOW,key,'DELETE')
     xbmc.executebuiltin("Container.Update")
+
