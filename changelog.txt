@@ -1,5 +1,6 @@
 2.1.2
 - Modified login procedure
+- Tested on Jarvis
 
 2.1.1
 - Added listen later
