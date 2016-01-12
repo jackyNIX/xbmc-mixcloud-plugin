@@ -30,6 +30,8 @@
 	<string id="30301">Unfavorite cloudcast</string>
 	<string id="30302">Follow gebruiker</string>
 	<string id="30303">Unfollow gebruiker</string>
+	<string id="30304">Cloudcast toevoegen aan Later Beluisteren</string>
+	<string id="30305">Cloudcast verwijderen van Later Beluisteren</string>
 	<!-- general settings -->
 	<string id="30400">Algemeen</string>
 	<string id="30401">Maximum cloudcasts per pagina</string>
