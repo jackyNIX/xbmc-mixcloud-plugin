@@ -1,0 +1,6 @@
+- remove mixcloud profile
+- nieuwe upload procedure bekijken
+- last.fm
+- rehost from another plugin
+- artist slideshow
+- crc lyrics

@@ -133,9 +133,10 @@ STR_THUMB_SIZES= {0:u'small',1:u'thumbnail',2:u'medium',3:u'large',4:u'extra_lar
 
 
 class Resolver:
-    local=0
-    offliberty=1
-    m4a=2
+    auto=0
+    local=1
+    offliberty=2
+    m4a=3
 
 
 
@@ -660,7 +661,8 @@ def get_stream(cloudcast_key):
     log_if_debug('Resolverid=%s' % (resolverid))
     resolverid_orig=resolverid
 
-    resolvers={Resolver.local : get_stream_local,
+    resolvers={Resolver.auto : get_stream_m4a,
+               Resolver.local : get_stream_local,
                Resolver.offliberty : get_stream_offliberty,
                Resolver.m4a : get_stream_m4a}
     strm=resolvers[resolverid](cloudcast_key)
