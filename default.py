@@ -674,6 +674,7 @@ def get_stream_mixclouddownloader(cloudcast_key,linknr):
         if linknr==1:
             match=re.search('a class="btn btn-secondary btn-sm" href="(.*)"', data)
         if linknr==2:
+            match=re.search('from Mixcloud: <br /> <a href="(.*)"', data)
         if match:
             return match.group(1)
         else:
@@ -698,6 +699,7 @@ def get_stream(cloudcast_key):
     log_if_debug('Resolverid=%s' % (resolverid))
     resolverid_orig=resolverid
 
+    resolvers={Resolver.auto : get_stream_mixclouddownloader2,
                Resolver.local : get_stream_local,
                Resolver.offliberty : get_stream_offliberty,
                Resolver.m4a : get_stream_m4a,
