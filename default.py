@@ -3,7 +3,7 @@
 '''
 @author: jackyNIX
 
-Copyright (C) 2011-2015 jackyNIX
+Copyright (C) 2011-2017 jackyNIX
 
 This file is part of XBMC MixCloud Plugin.
 
@@ -148,13 +148,14 @@ __addon__ =xbmcaddon.Addon('plugin.audio.mixcloud')
 __ICON__ = os.path.join(xbmcaddon.Addon().getAddonInfo('path'), 'icon.png')
 
 
-debugenabled=(__addon__.getSetting('debug')=='true')
-limit=       (1+int(__addon__.getSetting('page_limit')))*10
-thumb_size=  STR_THUMB_SIZES[int(__addon__.getSetting('thumb_size'))]
-resolverid=  int(__addon__.getSetting('resolver'))
-oath_code=   __addon__.getSetting('oath_code')
-access_token=__addon__.getSetting('access_token')
-ext_info=    (__addon__.getSetting('ext_info')=='true')
+debugenabled=     (__addon__.getSetting('debug')=='true')
+limit=            (1+int(__addon__.getSetting('page_limit')))*10
+thumb_size=       STR_THUMB_SIZES[int(__addon__.getSetting('thumb_size'))]
+resolverid_orig=  int(__addon__.getSetting('resolver'))
+resolverid_curr=  int(__addon__.getSetting('resolver'))
+oath_code=        __addon__.getSetting('oath_code')
+access_token=     __addon__.getSetting('access_token')
+ext_info=        (__addon__.getSetting('ext_info')=='true')
 
 
 
@@ -661,8 +662,8 @@ def get_stream_m4a(cloudcast_key):
 
 def get_stream_mixclouddownloader(cloudcast_key,linknr):
     ck=URL_MIXCLOUD[:-1]+cloudcast_key
-    log_if_debug('Resolving mixcloud downloader cloudcast stream for '+ck)
-    log_if_debug('link version %d' % linknr)
+    log_if_debug('Resolving mixcloud-downloader cloudcast stream for '+ck)
+    log_if_debug('Link version %d' % linknr)
     try:
         headers={
                     'User-Agent' : 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.27 Safari/537.36',
@@ -695,9 +696,12 @@ def get_stream_mixclouddownloader2(cloudcast_key):
 
 
 def get_stream(cloudcast_key):
-    global resolverid
-    log_if_debug('Resolverid=%s' % (resolverid))
-    resolverid_orig=resolverid
+    global resolverid_curr
+    global resolverid_orig
+
+    resolverid_start=resolverid_curr
+
+    log_if_debug('Resolverid _curr=%s _orig=%s' % (resolverid_curr,resolverid_orig))
 
     resolvers={Resolver.auto : get_stream_mixclouddownloader2,
                Resolver.local : get_stream_local,
@@ -705,22 +709,28 @@ def get_stream(cloudcast_key):
                Resolver.m4a : get_stream_m4a,
                Resolver.mixclouddownloader1 : get_stream_mixclouddownloader1,
                Resolver.mixclouddownloader2 : get_stream_mixclouddownloader2}
-    strm=resolvers[resolverid](cloudcast_key)
+
+    strm=resolvers[resolverid_curr](cloudcast_key)
 
     if not strm:
-        log_if_debug('Cannot solve using preferred resolver')
-        dialog=xbmcgui.Dialog()
+        log_if_debug('Cannot solve using current resolver')
 
-        while (not strm) and dialog.yesno('MixCloud',STRLOC_COMMON_RESOLVER_ERROR):
-            resolverid=resolverid+1
-            if resolverid>Resolver.mixclouddownloader2:
-                resolverid=Resolver.local
-            if resolverid==resolverid_orig:
+        if (resolverid_orig!=Resolver.auto):
+            dialog=xbmcgui.Dialog()
+            if not dialog.yesno('MixCloud',STRLOC_COMMON_RESOLVER_ERROR):
+                return strm
+
+        while (not strm):
+            resolverid_curr=resolverid_curr+1
+            if resolverid_curr>Resolver.mixclouddownloader2:
+                resolverid_curr=Resolver.auto
+            if resolverid_curr==resolverid_start:
                 break
-            log_if_debug('Changing resolver to '+resolverid)
-            strm=resolvers[resolverid](cloudcast_key)
-            if strm:
-                __addon__.setSetting('resolver',str(resolverid))
+            log_if_debug('Changing resolver to %d' % (resolverid_curr))
+            strm=resolvers[resolverid_curr](cloudcast_key)
+            if strm and (resolverid_orig!=Resolver.auto):
+                __addon__.setSetting('resolver',str(resolverid_curr))
+                resolverid_orig=resolverid_curr
 
     return strm
 
