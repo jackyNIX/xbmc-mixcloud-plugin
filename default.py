@@ -73,6 +73,7 @@ MODE_CATEGORIES=    20
 MODE_USERS=         21
 MODE_LISTENLATER=   22
 MODE_LOGIN=         23
+MODE_LOGOFF=        24
 MODE_SEARCH=        30
 MODE_PLAY=          40
 MODE_ADDFAVORITE=   50
@@ -177,6 +178,7 @@ STRLOC_MAINMENU_UPLOADS=          __addon__.getLocalizedString(30113)
 STRLOC_MAINMENU_PLAYLISTS=        __addon__.getLocalizedString(30114)
 STRLOC_MAINMENU_LISTENLATER=      __addon__.getLocalizedString(30115)
 STRLOC_MAINMENU_LOGIN=            __addon__.getLocalizedString(30116)
+STRLOC_MAINMENU_LOGOFF=           __addon__.getLocalizedString(30117)
 
 STRLOC_SEARCHMENU_CLOUDCASTS=     __addon__.getLocalizedString(30200)
 STRLOC_SEARCHMENU_USERS=          __addon__.getLocalizedString(30201)
@@ -239,6 +241,7 @@ def show_home_menu():
         add_folder_item(name=STRLOC_MAINMENU_UPLOADS,parameters={STR_MODE:MODE_UPLOADS},img=get_icon('youruploads.png'))
         add_folder_item(name=STRLOC_MAINMENU_PLAYLISTS,parameters={STR_MODE:MODE_PLAYLISTS},img=get_icon('yourplaylists.png'))
         add_folder_item(name=STRLOC_MAINMENU_LISTENLATER,parameters={STR_MODE:MODE_LISTENLATER},img=get_icon('listenlater.png'))
+        add_folder_item(name=STRLOC_MAINMENU_LOGOFF+'...',parameters={STR_MODE:MODE_LOGOFF})
     else:
         add_folder_item(name=STRLOC_MAINMENU_LOGIN,parameters={STR_MODE:MODE_LOGIN})
     add_folder_item(name=STRLOC_MAINMENU_HOT,parameters={STR_MODE:MODE_HOT,STR_OFFSET:0},img=get_icon('hot.png'))
@@ -406,7 +409,7 @@ def check_profile_state():
         log_if_debug('No access_token found')
         ask=True
         while ask:
-            ask=xbmcgui.Dialog().ok('Mixcloud',STRLOC_COMMON_TOKEN_ERROR,STRLOC_COMMON_AUTH_CODE)
+            ask=xbmcgui.Dialog().yesno('Mixcloud', STRLOC_COMMON_TOKEN_ERROR, STRLOC_COMMON_AUTH_CODE)
             if ask:
                 oath_code=get_query(oath_code)
                 __addon__.setSetting('oath_code',oath_code)
@@ -439,9 +442,20 @@ def check_profile_state():
                     except:
                         log_always('oath_code failed error=%s' % (sys.exc_info()[1]))
 
-                ask=(access_token=='')
+                ask=((oath_code<>'') and (access_token==''))
 
     return access_token<>''
+
+
+
+def logoff():
+    global oath_code
+    global access_token
+    if xbmcgui.Dialog().yesno('Mixcloud', STRLOC_MAINMENU_LOGOFF + '?'):
+        oath_code=''
+        access_token=''
+        __addon__.setSetting('oath_code','')
+        __addon__.setSetting('access_token','')
 
 
 
@@ -901,6 +915,9 @@ if not sys.argv[2] or mode==MODE_HOME:
     ok=show_home_menu()
 if mode==MODE_LOGIN:
     check_profile_state()
+    ok=show_home_menu()
+if mode==MODE_LOGOFF:
+    logoff()
     ok=show_home_menu()
 elif mode==MODE_FEED:
     ok=show_feed_menu(offset)
