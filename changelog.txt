@@ -1,3 +1,7 @@
+2.4.0
+- fixed local resolver
+- removed broken resolvers
+
 2.3.0
 - added logoff functionality
 - modified login procedure
