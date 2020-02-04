@@ -642,20 +642,40 @@ def get_stream_local(cloudcast_key):
                 decoded=match.group(1).replace('&quot;','"')
                 json_content=json.loads(decoded)
                 for json_item in json_content:
-                    if STR_CLOUDCAST in json_item and json_item[STR_CLOUDCAST]:
-                        json_cloudcast=json_item[STR_CLOUDCAST]
-                        if STR_DATA in json_cloudcast and json_cloudcast[STR_DATA]:
-                            json_data=json_cloudcast[STR_DATA]
+
+                    if STR_CLOUDCASTLOOKUP in json_item and json_item[STR_CLOUDCASTLOOKUP]:
+                        json_cloudcastLookupA = json_item[STR_CLOUDCASTLOOKUP]
+                        if STR_DATA in json_cloudcastLookupA and json_cloudcastLookupA[STR_DATA]:
+                            json_data = json_cloudcastLookupA[STR_DATA]
                             if STR_CLOUDCASTLOOKUP in json_data and json_data[STR_CLOUDCASTLOOKUP]:
-                                json_cloudcastlookup=json_data[STR_CLOUDCASTLOOKUP]
-                                if STR_STREAMINFO in json_cloudcastlookup and json_cloudcastlookup[STR_STREAMINFO]:
-                                    json_streaminfo=json_cloudcastlookup[STR_STREAMINFO]
+                                json_cloudcastLookupB = json_data[STR_CLOUDCASTLOOKUP]
+                                if STR_STREAMINFO in json_cloudcastLookupB and json_cloudcastLookupB[STR_STREAMINFO]:
+                                    json_streaminfo = json_cloudcastLookupB[STR_STREAMINFO]
                                     if STR_URL in json_streaminfo and json_streaminfo[STR_URL]:
-                                        json_url=json_streaminfo[STR_URL]
+                                        json_url = json_streaminfo[STR_URL]
                                     elif STR_HLSURL in json_streaminfo and json_streaminfo[STR_HLSURL]:
-                                        json_url=json_streaminfo[STR_HLSURL]
+                                        json_url = json_streaminfo[STR_HLSURL]
                                     elif STR_DASHURL in json_streaminfo and json_streaminfo[STR_DASHURL]:
-                                        json_url=json_streaminfo[STR_DASHURL]
+                                        json_url = json_streaminfo[STR_DASHURL]
+
+
+#				if STR_CLOUDCAST in json_item and json_item[STR_CLOUDCAST]:
+#                        json_cloudcast=json_item[STR_CLOUDCAST]
+#                        if STR_DATA in json_cloudcast and json_cloudcast[STR_DATA]:
+#                            json_data=json_cloudcast[STR_DATA]
+#                            if STR_CLOUDCASTLOOKUP in json_data and json_data[STR_CLOUDCASTLOOKUP]:
+#                                json_cloudcastlookup=json_data[STR_CLOUDCASTLOOKUP]
+#                                if STR_STREAMINFO in json_cloudcastlookup and json_cloudcastlookup[STR_STREAMINFO]:
+#                                    json_streaminfo=json_cloudcastlookup[STR_STREAMINFO]
+#                                    if STR_URL in json_streaminfo and json_streaminfo[STR_URL]:
+#                                        json_url=json_streaminfo[STR_URL]
+#                                    elif STR_HLSURL in json_streaminfo and json_streaminfo[STR_HLSURL]:
+#                                        json_url=json_streaminfo[STR_HLSURL]
+#                                    elif STR_DASHURL in json_streaminfo and json_streaminfo[STR_DASHURL]:
+#                                        json_url=json_streaminfo[STR_DASHURL]
+
+
+
                 if json_url:
                     log_if_debug('encoded url: '+json_url)
                     decoded_url=base64.b64decode(json_url)
