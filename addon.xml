@@ -22,7 +22,7 @@
     <platform>all</platform>
     <language></language>
     <license>GNU GENERAL PUBLIC LICENSE. Version 3, 29 June 2007</license>
-    <forum>http://forum.xbmc.org/showthread.php?tid=116386</forum>
+    <forum>https://forum.kodi.tv/showthread.php?tid=116386</forum>
     <source>https://github.com/jackyNIX/xbmc-mixcloud-plugin</source>
   </extension>
 </addon>                       
