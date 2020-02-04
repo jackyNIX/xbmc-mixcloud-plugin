@@ -204,7 +204,7 @@ def add_audio_item(infolabels,parameters={},img='',total=0):
     listitem.setInfo('Music',infolabels)
     listitem.setProperty('IsPlayable','true')
     url=sys.argv[0]+'?'+urllib.urlencode(parameters)
-    if access_token<>'':
+    if access_token!='':
         commands=[]
         if mode==MODE_FAVORITES:
             commands.append((STRLOC_CONTEXTMENU_DELFAVORITE,"XBMC.RunPlugin(%s?mode=%d&key=%s)"%(sys.argv[0],MODE_DELFAVORITE,parameters.get(STR_KEY,""))))
@@ -226,7 +226,7 @@ def add_folder_item(name,infolabels={},parameters={},img=''):
     listitem=xbmcgui.ListItem(name,name,iconImage=img,thumbnailImage=img)
     listitem.setInfo('Music',infolabels)
     url=sys.argv[0]+'?'+urllib.urlencode(parameters)
-    if access_token<>'':
+    if access_token!='':
         commands=[]
         if mode==MODE_FOLLOWINGS:
             commands.append((STRLOC_CONTEXTMENU_DELFOLLOWING,"XBMC.RunPlugin(%s?mode=%d&key=%s)"%(sys.argv[0],MODE_DELFOLLOWING,parameters.get(STR_KEY,""))))
@@ -238,7 +238,7 @@ def add_folder_item(name,infolabels={},parameters={},img=''):
 
 
 def show_home_menu():
-    if access_token<>'':
+    if access_token!='':
 #        add_folder_item(name=STRLOC_MAINMENU_FEED,parameters={STR_MODE:MODE_FEED})
         add_folder_item(name=STRLOC_MAINMENU_FOLLOWINGS,parameters={STR_MODE:MODE_FOLLOWINGS},img=get_icon('yourfollowings.png'))
         add_folder_item(name=STRLOC_MAINMENU_FOLLOWERS,parameters={STR_MODE:MODE_FOLLOWERS},img=get_icon('yourfollowers.png'))
@@ -420,7 +420,7 @@ def check_profile_state():
                 oath_code=get_query(oath_code)
                 __addon__.setSetting('oath_code',oath_code)
                 __addon__.setSetting('access_token','')
-                if oath_code<>'':
+                if oath_code!='':
                     try:
                         values={
                                 'client_id' : STR_CLIENTID,
@@ -448,9 +448,9 @@ def check_profile_state():
                     except:
                         log_always('oath_code failed error=%s' % (sys.exc_info()[1]))
 
-                ask=((oath_code<>'') and (access_token==''))
+                ask=((oath_code!='') and (access_token==''))
 
-    return access_token<>''
+    return access_token!=''
 
 
 
@@ -581,7 +581,7 @@ def add_cloudcast(index,json_cloudcast,total,forinfo=False):
             json_tags=json_cloudcast[STR_TAGS]
             for json_tag in json_tags:
                 if STR_NAME in json_tag and json_tag[STR_NAME]:
-                    if json_genre<>'':
+                    if json_genre!='':
                         json_genre=json_genre+', '
                     json_genre=json_genre+json_tag[STR_NAME]
         infolabels = {STR_COUNT:index,STR_TRACKNUMBER:index,STR_TITLE:json_name,STR_ARTIST:json_username,STR_DURATION:json_length,STR_YEAR:json_year,STR_DATE:json_date,STR_COMMENT:json_comment,STR_GENRE:json_genre}
@@ -688,7 +688,7 @@ def get_stream_local(cloudcast_key):
                 log_if_debug('Unable to resolve (match 2)')
         else:
             log_if_debug('Unable to resolve (match 1)')
-    except Exception, e:
+    except Exception as e:
         log_if_debug('Unable to resolve: ' + str(e))
 
 
@@ -748,7 +748,7 @@ def get_stream_mixclouddownloader(cloudcast_key,linknr):
             return match.group(1)
         else:
             log_if_debug('Wrong response code=%s len=%s' % (response.getcode(), len(data)))
-    except Exception, e:
+    except Exception as e:
         log_if_debug('Unable to resolve: ' + str(e))
 
 
