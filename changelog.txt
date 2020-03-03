@@ -1,3 +1,11 @@
+3.0.0
+- python 3 migration
+- new logo, icons and other art
+- improved context menus
+- improved history
+- cleanup obsolete menu items
+- reworked resolvers
+
 2.4.3
 - handle exclusive cloudcasts
 - removed obsolete menu items

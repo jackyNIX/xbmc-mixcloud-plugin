@@ -19,14 +19,13 @@ Contributors:
 
 ============================================
 
-Current version: 2.4.3
-  - Leia
-  - Krypton
-  - Jarvis
-  - Isengard
-  - Helix
-  - Gotham
+Current version: 3.0.0~rc
+  - Matrix
 
+============================================
+
+ToDo:
+  
 ============================================
 
 Features:
@@ -34,31 +33,28 @@ Features:
     - Followings
     - Followers
     - Favorites
-    - Listens
+    - History
     - Uploads
     - Listen later
     - Playlists
-    - Logoff
   - Browse
-    - Trending
     - Categories
   - Search
     - Cloudcasts
     - Users
+    - Search history
   - Play cloudcasts
-    - Local resolver
-    - Offliberty resolver
+    - Mixcloud resolver
     - Mixcloud-Downloader resolver
-    - Low quality m4a resolver (broken)
+    - Offliberty resolver
   - Thumbnails
   - History
-    - Played cloudcasts
-    - Search
+    - Profile
+    - Local
   - Localisation
     - English
     - Dutch
     - French
     - German
-  - jackyNIX's own cloudcasts :p
 
 ============================================
