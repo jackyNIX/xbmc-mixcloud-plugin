@@ -201,3 +201,27 @@ msgstr ""
 msgctxt "#30933"
 msgid "Clear history..."
 msgstr ""
+
+
+
+# thumbnail sizes
+
+msgctxt "#30940"
+msgid "very small (25x25)"
+msgstr ""
+
+msgctxt "#30941"
+msgid "small (50x50)"
+msgstr ""
+
+msgctxt "#30942"
+msgid "medium (100x100)"
+msgstr ""
+
+msgctxt "#30943"
+msgid "large (300x300)"
+msgstr ""
+
+msgctxt "#30944"
+msgid "extra large (600x600)"
+msgstr ""

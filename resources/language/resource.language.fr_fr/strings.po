@@ -50,7 +50,7 @@ msgstr "Uploads"
 
 msgctxt "#30105"
 msgid "Playlists"
-msgstr "Playlistes"
+msgstr "Listes de lecture"
 
 msgctxt "#30106"
 msgid "Listen Later"
@@ -215,3 +215,27 @@ msgstr "Nombre maximal de recherches"
 msgctxt "#30933"
 msgid "Clear history..."
 msgstr "Effacer historique..."
+
+
+
+# thumbnail sizes
+
+msgctxt "#30940"
+msgid "very small (25x25)"
+msgstr "très petit (25x25)"
+
+msgctxt "#30941"
+msgid "small (50x50)"
+msgstr "petit (50x50)"
+
+msgctxt "#30942"
+msgid "medium (100x100)"
+msgstr ""
+
+msgctxt "#30943"
+msgid "large (300x300)"
+msgstr ""
+
+msgctxt "#30944"
+msgid "extra large (600x600)"
+msgstr ""

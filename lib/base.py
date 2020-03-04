@@ -1,4 +1,29 @@
-from .utils import getArguments, log, encodeArguments, getSetting
+# -*- coding: utf-8 -*-
+
+'''
+@author: jackyNIX
+
+Copyright (C) 2011-2020 jackyNIX
+
+This file is part of KODI Mixcloud Plugin.
+
+KODI Mixcloud Plugin is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+KODI Mixcloud Plugin is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with KODI Mixcloud Plugin.  If not, see <http://www.gnu.org/licenses/>.
+'''
+
+
+
+from .utils import Utils
 from .lang import Lang
 import sys
 import xbmc
@@ -11,7 +36,7 @@ import xbmcgui
 class BaseBuilder:
 
     def __init__(self):
-        plugin_args = getArguments()
+        plugin_args = Utils.getArguments()
         self.plugin_handle = int(sys.argv[1])
         self.mode = plugin_args.get('mode', '')
         self.key = plugin_args.get('key', '')
@@ -19,16 +44,16 @@ class BaseBuilder:
             self.offset = [int(plugin_args.get('offset', '0')), int(plugin_args.get('offsetex', '0'))]
         else:
             self.offset = int(plugin_args.get('offset', '0'))
-        log('BaseBuilder.__init__(self = ' + self.__class__.__name__ + ', plugin_handle = ' + str(self.plugin_handle) + ', mode = ' + self.mode + ', key = ' + self.key + ', offset = ' + str(self.offset) + ')')
+        Utils.log('BaseBuilder.__init__(self = ' + self.__class__.__name__ + ', plugin_handle = ' + str(self.plugin_handle) + ', mode = ' + self.mode + ', key = ' + self.key + ', offset = ' + str(self.offset) + ')')
 
     def execute(self):
-        log('BaseBuilder.execute()')
+        Utils.log('BaseBuilder.execute()')
         ret = self.build()
         if ret != None:
             xbmcplugin.endOfDirectory(handle = self.plugin_handle, succeeded = ret)
 
     def build(self):
-        log('BaseBuilder.build()')
+        Utils.log('BaseBuilder.build()')
         return True
 
 
@@ -37,9 +62,9 @@ class BaseBuilder:
 class BaseListBuilder(BaseBuilder):
 
     def build(self):
-        log('BaseListBuilder.build()')
+        Utils.log('BaseListBuilder.build()')
         nextOffset = self.buildItems()
-        log('next offset: ' + str(nextOffset))
+        Utils.log('next offset: ' + str(nextOffset))
         nextOffsetEx = None
         if isinstance(nextOffset, list):
             nextOffsetEx = nextOffset[1]
@@ -52,11 +77,11 @@ class BaseListBuilder(BaseBuilder):
         return (nextOffset != -1)
 
     def buildItems(self):
-        log('BaseListBuilder.buildItems()')
+        Utils.log('BaseListBuilder.buildItems()')
         return 0
 
     def addFolderItem(self, infolabels = {}, parameters = {}, img = '', contextmenuitems = []):
-        log('BaseListBuilder.addFolderItem(infolabels = ' + str(infolabels) + ', parameters = ' + str(parameters) + ', img = ' + img + ', contextmenuitems = ' + str(contextmenuitems) + ')')
+        Utils.log('BaseListBuilder.addFolderItem(infolabels = ' + str(infolabels) + ', parameters = ' + str(parameters) + ', img = ' + img + ', contextmenuitems = ' + str(contextmenuitems) + ')')
 
         listitem = xbmcgui.ListItem(infolabels['title'], infolabels['title'])
         listitem.setArt({'icon' : img, 'thumb' : img})
@@ -65,10 +90,10 @@ class BaseListBuilder(BaseBuilder):
         if contextmenuitems:
             listitem.addContextMenuItems(contextmenuitems)
 
-        return xbmcplugin.addDirectoryItem(handle = self.plugin_handle, url = encodeArguments(parameters), listitem = listitem, isFolder = True)
+        return xbmcplugin.addDirectoryItem(handle = self.plugin_handle, url = Utils.encodeArguments(parameters), listitem = listitem, isFolder = True)
 
     def addAudioItem(self, infolabels = {}, parameters = {}, img = '', contextmenuitems = [], total = 0):
-        log('BaseListBuilder.addAudioItem(infolabels = ' + str(infolabels) + ', parameters = ' + str(parameters) + ', img = ' + img + ', contextmenuitems = ' + str(contextmenuitems) + ', total = ' + str(total) + ')')
+        Utils.log('BaseListBuilder.addAudioItem(infolabels = ' + str(infolabels) + ', parameters = ' + str(parameters) + ', img = ' + img + ', contextmenuitems = ' + str(contextmenuitems) + ', total = ' + str(total) + ')')
 
         listitem = xbmcgui.ListItem(infolabels['title'], infolabels['artist'])
         listitem.setArt({'icon' : img, 'thumb' : img})
@@ -78,29 +103,29 @@ class BaseListBuilder(BaseBuilder):
         if contextmenuitems:
             listitem.addContextMenuItems(contextmenuitems)
 
-        xbmcplugin.addDirectoryItem(handle = self.plugin_handle, url = encodeArguments(parameters), listitem = listitem, isFolder = False, totalItems = total)
+        xbmcplugin.addDirectoryItem(handle = self.plugin_handle, url = Utils.encodeArguments(parameters), listitem = listitem, isFolder = False, totalItems = total)
 
     def buildContextMenuItems(self, item):
         contextMenuItems = []
 
         if item.favorited == False:
-            contextMenuItems.append((Lang.ADD_TO_FAVORITES, 'XBMC.RunPlugin(' + encodeArguments({'mode' : 'post', 'key' : item.key + 'favorite/'}) + ')'))
+            contextMenuItems.append((Lang.ADD_TO_FAVORITES, 'XBMC.RunPlugin(' + Utils.encodeArguments({'mode' : 'post', 'key' : item.key + 'favorite/'}) + ')'))
         elif item.favorited == True:
-            contextMenuItems.append((Lang.REMOVE_FROM_FAVORITES, 'XBMC.RunPlugin(' + encodeArguments({'mode' : 'delete', 'key' : item.key + 'favorite/'}) + ')'))
+            contextMenuItems.append((Lang.REMOVE_FROM_FAVORITES, 'XBMC.RunPlugin(' + Utils.encodeArguments({'mode' : 'delete', 'key' : item.key + 'favorite/'}) + ')'))
 
         if item.listenlater == False:
-            contextMenuItems.append((Lang.ADD_TO_LISTEN_LATER, 'XBMC.RunPlugin(' + encodeArguments({'mode' : 'post', 'key' : item.key + 'listen-later/'}) + ')'))
+            contextMenuItems.append((Lang.ADD_TO_LISTEN_LATER, 'XBMC.RunPlugin(' + Utils.encodeArguments({'mode' : 'post', 'key' : item.key + 'listen-later/'}) + ')'))
         elif item.listenlater == True:
-            contextMenuItems.append((Lang.REMOVE_FROM_LISTEN_LATER, 'XBMC.RunPlugin(' + encodeArguments({'mode' : 'delete', 'key' : item.key + 'listen-later/'}) + ')'))
+            contextMenuItems.append((Lang.REMOVE_FROM_LISTEN_LATER, 'XBMC.RunPlugin(' + Utils.encodeArguments({'mode' : 'delete', 'key' : item.key + 'listen-later/'}) + ')'))
 
         userKey = item.user
         if not userKey:
             userKey = item.key
 
         if item.following == False:
-            contextMenuItems.append((Lang.ADD_TO_FOLLOWINGS, 'XBMC.RunPlugin(' + encodeArguments({'mode' : 'post', 'key' : userKey + 'follow/'}) + ')'))
+            contextMenuItems.append((Lang.ADD_TO_FOLLOWINGS, 'XBMC.RunPlugin(' + Utils.encodeArguments({'mode' : 'post', 'key' : userKey + 'follow/'}) + ')'))
         elif item.following == True:
-            contextMenuItems.append((Lang.REMOVE_FROM_FOLLOWINGS, 'XBMC.RunPlugin(' + encodeArguments({'mode' : 'delete', 'key' : userKey + 'follow/'}) + ')'))
+            contextMenuItems.append((Lang.REMOVE_FROM_FOLLOWINGS, 'XBMC.RunPlugin(' + Utils.encodeArguments({'mode' : 'delete', 'key' : userKey + 'follow/'}) + ')'))
 
         # fake menu separator
         # I do hope one day kodi will support menu separators
@@ -126,7 +151,7 @@ class QueryListBuilder(BaseListBuilder):
         return -1
     
     def buildQueryItems(self, query):
-        log('QueryListBuilder.buildQueryItems(' + query + ')')
+        Utils.log('QueryListBuilder.buildQueryItems(' + query + ')')
         return 0
 
 
@@ -148,8 +173,8 @@ class BaseList:
 
     def merge(self, baseLists = []):
         listCount = len(baseLists)
-        log('merge lists: ' + str(listCount))
-        maxItems = (1 + int(getSetting('page_limit'))) * 10
+        Utils.log('merge lists: ' + str(listCount))
+        maxItems = int(Utils.getSetting('page_limit'))
         index = []
         count = []
         curItems = []
@@ -157,17 +182,17 @@ class BaseList:
             index.append(0)
             count.append(len(baseList.items))
             curItems.append(None)
-        log('counts: ' + str(count))
 
         for iMerged in range(maxItems):
-            log('iMerged: ' + str(iMerged))
-            log('indexes: ' + str(index))
+            # user aborted
+            if xbmc.Monitor().abortRequested():
+                break
+                
             for iList in range(listCount):
                 if index[iList] < count[iList]:
                     curItems[iList] = baseLists[iList].items[index[iList]]
                 else:
                     curItems[iList] = None
-            log('items: ' + str(curItems))
 
             iAdd = -1
             for iList in range(listCount):
@@ -178,18 +203,16 @@ class BaseList:
             if iAdd != -1:
                 self.items.append(curItems[iAdd])
                 index[iAdd] = index[iAdd] + 1
-                log('add: ' + str(iAdd) + ' ' + str(curItems[iAdd]))
             else:
                 break
 
-        log('merged result: ' + str(len(self.items)) + ' ' + str(self.items))
-
-        log('nextoffset: ' + str(index))
+        Utils.log('merged result: ' + str(len(self.items)) + ' ' + str(self.items))
+        Utils.log('nextoffset: ' + str(index))
         self.nextOffset = index
 
     # limit list
     def trim(self):
-        maxItems = (1 + int(getSetting('page_limit'))) * 10
+        maxItems = int(Utils.getSetting('page_limit'))
         while len(self.items) > maxItems:
             self.items.pop()
 

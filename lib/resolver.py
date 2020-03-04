@@ -1,4 +1,29 @@
-from .utils import log, encodeArguments, getIcon, getArguments, getSetting, setSetting, isValidURL
+# -*- coding: utf-8 -*-
+
+'''
+@author: jackyNIX
+
+Copyright (C) 2011-2020 jackyNIX
+
+This file is part of KODI Mixcloud Plugin.
+
+KODI Mixcloud Plugin is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+KODI Mixcloud Plugin is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with KODI Mixcloud Plugin.  If not, see <http://www.gnu.org/licenses/>.
+'''
+
+
+
+from .utils import Utils
 from .history import History
 from .mixcloud import MixcloudInterface
 from .base import BaseBuilder
@@ -14,7 +39,7 @@ from itertools import cycle
 
 
 
-STR_USERAGENT=      'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:72.0) Gecko/20100101 Firefox/72.0'
+STR_USERAGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:72.0) Gecko/20100101 Firefox/72.0'
 
 
 
@@ -33,7 +58,7 @@ class MixcloudResolver(BaseResolver):
     def resolve(self):
         url = None
         ck = 'https://www.mixcloud.com' + self.key
-        log('resolving cloudcast stream via mixcloud: ' + ck)
+        Utils.log('resolving cloudcast stream via mixcloud: ' + ck)
 
         try:
             headers = {
@@ -50,6 +75,10 @@ class MixcloudResolver(BaseResolver):
                     content = json.loads(decoded)
                     isexclusive = False
                     for item in content:
+                        # user aborted
+                        if xbmc.Monitor().abortRequested():
+                            break
+                
                         if 'cloudcastLookup' in item and item['cloudcastLookup']:
                             cloudcastLookupA = item['cloudcastLookup']
                             if 'data' in cloudcastLookupA and cloudcastLookupA['data']:
@@ -72,20 +101,20 @@ class MixcloudResolver(BaseResolver):
                     if url:
                         decoded_url = base64.b64decode(url).decode('utf-8')
                         url = ''.join(chr(ord(a) ^ ord(b)) for a, b in zip(decoded_url, cycle('IFYOUWANTTHEARTISTSTOGETPAIDDONOTDOWNLOADFROMMIXCLOUD')))
-                        log('url found: '+url)
-                        if not isValidURL(url):
-                            log('invalid url')
+                        Utils.log('url found: '+url)
+                        if not Utils.isValidURL(url):
+                            Utils.log('invalid url')
                             url = None
                     elif isexclusive:
-                        log('Cloudcast is exclusive')
+                        Utils.log('Cloudcast is exclusive')
                     else:
-                        log('Unable to find url in json')
+                        Utils.log('Unable to find url in json')
                 else:
-                    log('Unable to resolve (match 2)')
+                    Utils.log('Unable to resolve (match 2)')
             else:
-                log('Unable to resolve (match 1)')
+                Utils.log('Unable to resolve (match 1)')
         except Exception as e:
-            log('Unable to resolve: ' + str(e))
+            Utils.log('Unable to resolve', e)
         return url
 
 
@@ -95,7 +124,7 @@ class MixcloudDownloaderResolver(BaseResolver):
     def resolve(self):
         url = None
         ck = 'https://www.mixcloud.com' + self.key
-        log('resolving cloudcast stream via mixcloud-downloader: ' + ck)
+        Utils.log('resolving cloudcast stream via mixcloud-downloader: ' + ck)
 
         try:
             headers = {
@@ -117,26 +146,26 @@ class MixcloudDownloaderResolver(BaseResolver):
                 match=re.search(r'href="(.*)"', match.group(1))
                 if match:
                     url = match.group(1)
-                    log('url found (1): ' + url)
-                    if not isValidURL(url):
-                        log('invalid url')
+                    Utils.log('url found (1): ' + url)
+                    if not Utils.isValidURL(url):
+                        Utils.log('invalid url')
                         url = None
                 else:
-                    log('Wrong response code (1)=%s len=%s' % (response.getcode(), len(data)))
+                    Utils.log('Wrong response code (1)=%s len=%s' % (response.getcode(), len(data)))
 
             # second attempt
             if not url:
                 match = re.search(r'URL from Mixcloud: <br /> <a href="(.*)"', data)
                 if match:
                     url = match.group(1)
-                    log('url found (2): ' + url)
-                    if not isValidURL(url):
-                        log('invalid url')
+                    Utils.log('url found (2): ' + url)
+                    if not Utils.isValidURL(url):
+                        Utils.log('invalid url')
                         url = None
                 else:
-                    log('Wrong response code (2)=%s len=%s' % (response.getcode(), len(data)))
+                    Utils.log('Wrong response code (2)=%s len=%s' % (response.getcode(), len(data)))
         except Exception as e:
-            log('Unable to resolve: ' + str(e))
+            Utils.log('Unable to resolve: ', e)
         return url
 
 
@@ -148,7 +177,11 @@ class OfflibertyResolver(BaseResolver):
         ck = 'https://www.mixcloud.com' + self.key
 
         for retry in range(1, 2):
-            log('resolving cloudcast stream via offliberty (' + str(retry) + '): ' + ck)
+            # user aborted
+            if xbmc.Monitor().abortRequested():
+                break
+                
+            Utils.log('resolving cloudcast stream via offliberty (' + str(retry) + '): ' + ck)
 
             try:
                 values = {
@@ -166,14 +199,14 @@ class OfflibertyResolver(BaseResolver):
                 match = re.search(r'href="(.*)" class="download"', data)
                 if match:
                     url = match.group(1)
-                    log('url found: ' + url)
-                    if not isValidURL(url):
-                        log('invalid url')
+                    Utils.log('url found: ' + url)
+                    if not Utils.isValidURL(url):
+                        Utils.log('invalid url')
                         url = None
                 else:
-                    log('Wrong response try=%s code=%s len=%s, trying again...' % (retry, response.getcode(), len(data)))
-            except:
-                log('Unexpected error try=%s error=%s, trying again...' % (retry, sys.exc_info()[0]))
+                    Utils.log('Wrong response try=%s code=%s len=%s, trying again...' % (retry, response.getcode(), len(data)))
+            except Exception as e:
+                Utils.log('Unexpected error try=%s error=%s, trying again...' % (retry, sys.exc_info()[0]), e)
         return url
 
 
@@ -181,7 +214,7 @@ class OfflibertyResolver(BaseResolver):
 class ResolverBuilder(BaseBuilder):
 
     def execute(self):
-        log('ResolverBuilder.execute()')
+        Utils.log('ResolverBuilder.execute()')
         url = self.getStream()
         if url:
             mixcloudListItem = MixcloudInterface().getCloudcast(self.key, {})
@@ -189,36 +222,36 @@ class ResolverBuilder(BaseBuilder):
                 listitem = xbmcgui.ListItem(label = mixcloudListItem.infolabels['title'], label2 = mixcloudListItem.infolabels['artist'], path = url)
                 listitem.setInfo('music', mixcloudListItem.infolabels)
                 xbmcplugin.setResolvedUrl(handle = self.plugin_handle, succeeded = True, listitem = listitem)
-                History('play_history').add({'key' : self.key})
-                log('Playing: ' + url)
+                History.getHistory('play_history').add({'key' : self.key})
+                Utils.log('Playing: ' + url)
                 return
-        log('Stop player')
+        Utils.log('Stop player')
         xbmcplugin.setResolvedUrl(handle = self.plugin_handle, succeeded = False, listitem = xbmcgui.ListItem())
 
     def getStream(self):
-        log('ResolverBuilder.getStream()')
+        Utils.log('ResolverBuilder.getStream()')
 
         strm_url = None
 
         # resolvers
         activeResolvers = []
-        if getSetting('resolver_mixcloud') == 'true':
+        if Utils.getSetting('resolver_mixcloud') == 'true':
             activeResolvers.append(MixcloudResolver)
-        if getSetting('resolver_mixclouddownloader') == 'true':
+        if Utils.getSetting('resolver_mixclouddownloader') == 'true':
             activeResolvers.append(MixcloudDownloaderResolver)
-        if getSetting('resolver_offliberty') == 'true':
+        if Utils.getSetting('resolver_offliberty') == 'true':
             activeResolvers.append(OfflibertyResolver)
-        log('active resolvers: ' + str(activeResolvers))
+        Utils.log('active resolvers: ' + str(activeResolvers))
 
         for resolver in activeResolvers:
+            # user aborted
+            if xbmc.Monitor().abortRequested():
+                break
+                
             strm_url = resolver(self.key).resolve()
 
             # stream found!
             if strm_url:
                 break
 
-            # user aborted
-            if xbmc.Monitor().abortRequested():
-                break
-                
         return strm_url

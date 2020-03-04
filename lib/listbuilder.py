@@ -5,20 +5,20 @@
 
 Copyright (C) 2011-2020 jackyNIX
 
-This file is part of KODI MixCloud Plugin.
+This file is part of KODI Mixcloud Plugin.
 
-KODI MixCloud Plugin is free software: you can redistribute it and/or modify
+KODI Mixcloud Plugin is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-KODI MixCloud Plugin is distributed in the hope that it will be useful,
+KODI Mixcloud Plugin is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with KODI MixCloud Plugin.  If not, see <http://www.gnu.org/licenses/>.
+along with KODI Mixcloud Plugin.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
 
@@ -29,7 +29,7 @@ import xbmcgui
 import xbmcplugin
 from datetime import datetime
 from .mixcloud import MixcloudInterface
-from .utils import log, encodeArguments, getIcon, getArguments
+from .utils import Utils
 from .history import History
 from .resolver import ResolverBuilder
 from .base import BaseBuilder, BaseListBuilder, QueryListBuilder, BaseList
@@ -41,19 +41,19 @@ from .lang import Lang
 class MainBuilder(BaseListBuilder):
 
     def buildItems(self):
-        log('MainBuilder.buildItems()')
+        Utils.log('MainBuilder.buildItems()')
         if MixcloudInterface().profileLoggedIn():
-            self.addFolderItem({'title' : Lang.FOLLOWINGS}, {'mode' : 'playlists', 'key' : '/me/following/'}, getIcon('nav/kodi_highlight.png'))
-            self.addFolderItem({'title' : Lang.FOLLOWERS}, {'mode' : 'playlists', 'key' : '/me/followers/'}, getIcon('nav/kodi_highlight.png'))
-            self.addFolderItem({'title' : Lang.FAVORITES}, {'mode' : 'cloudcasts', 'key' : '/me/favorites/'}, getIcon('nav/kodi_favorites.png'))
-            self.addFolderItem({'title' : Lang.UPLOADS}, {'mode' : 'cloudcasts', 'key' : '/me/cloudcasts/'}, getIcon('nav/kodi_uploads.png'))
-            self.addFolderItem({'title' : Lang.PLAYLISTS}, {'mode' : 'playlists', 'key' : '/me/playlists/'}, getIcon('nav/kodi_playlists.png'))
-            self.addFolderItem({'title' : Lang.LISTEN_LATER}, {'mode' : 'cloudcasts', 'key' : '/me/listen-later/'}, getIcon('nav/kodi_listenlater.png'))
+            self.addFolderItem({'title' : Lang.FOLLOWINGS}, {'mode' : 'playlists', 'key' : '/me/following/'}, Utils.getIcon('nav/kodi_highlight.png'))
+            self.addFolderItem({'title' : Lang.FOLLOWERS}, {'mode' : 'playlists', 'key' : '/me/followers/'}, Utils.getIcon('nav/kodi_highlight.png'))
+            self.addFolderItem({'title' : Lang.FAVORITES}, {'mode' : 'cloudcasts', 'key' : '/me/favorites/'}, Utils.getIcon('nav/kodi_favorites.png'))
+            self.addFolderItem({'title' : Lang.UPLOADS}, {'mode' : 'cloudcasts', 'key' : '/me/cloudcasts/'}, Utils.getIcon('nav/kodi_uploads.png'))
+            self.addFolderItem({'title' : Lang.PLAYLISTS}, {'mode' : 'playlists', 'key' : '/me/playlists/'}, Utils.getIcon('nav/kodi_playlists.png'))
+            self.addFolderItem({'title' : Lang.LISTEN_LATER}, {'mode' : 'cloudcasts', 'key' : '/me/listen-later/'}, Utils.getIcon('nav/kodi_listenlater.png'))
         else:
-            self.addFolderItem({'title' : Lang.PROFILE}, {'mode' : 'profile', 'key' : 'login'}, getIcon('nav/kodi_profile.png'))
-        self.addFolderItem({'title' : Lang.CATEGORIES}, {'mode' : 'playlists', 'key' : '/categories/'}, getIcon('nav/kodi_categories.png'))
-        self.addFolderItem({'title' : Lang.HISTORY}, {'mode' : 'playhistory', 'offset' : 0, 'offsetex' : 0}, getIcon('nav/kodi_history.png'))
-        self.addFolderItem({'title' : Lang.SEARCH}, {'mode' : 'search'}, getIcon('nav/kodi_search.png'))
+            self.addFolderItem({'title' : Lang.PROFILE}, {'mode' : 'profile', 'key' : 'login'}, Utils.getIcon('nav/kodi_profile.png'))
+        self.addFolderItem({'title' : Lang.CATEGORIES}, {'mode' : 'playlists', 'key' : '/categories/'}, Utils.getIcon('nav/kodi_categories.png'))
+        self.addFolderItem({'title' : Lang.HISTORY}, {'mode' : 'playhistory', 'offset' : 0, 'offsetex' : 0}, Utils.getIcon('nav/kodi_history.png'))
+        self.addFolderItem({'title' : Lang.SEARCH}, {'mode' : 'search'}, Utils.getIcon('nav/kodi_search.png'))
         return 0
 
 
@@ -62,10 +62,14 @@ class MainBuilder(BaseListBuilder):
 class CloudcastsBuilder(BaseListBuilder):
 
     def buildItems(self):
-        log('CloudcastsBuilder.buildItems()')
+        Utils.log('CloudcastsBuilder.buildItems()')
         xbmcplugin.setContent(self.plugin_handle, 'songs')
         cloudcasts = MixcloudInterface().getList(self.key, {'offset' : self.offset})
         for cloudcast in cloudcasts.items:
+            # user aborted
+            if xbmc.Monitor().abortRequested():
+                break
+                
             contextMenuItems = self.buildContextMenuItems(cloudcast)
             self.addAudioItem(cloudcast.infolabels, {'mode' : 'resolve', 'key' : cloudcast.key, 'user' : cloudcast.user}, cloudcast.image, contextMenuItems, len(cloudcasts.items))
         return cloudcasts.nextOffset
@@ -76,15 +80,19 @@ class CloudcastsBuilder(BaseListBuilder):
 class PlaylistsBuilder(BaseListBuilder):
 
     def buildItems(self):
-        log('PlaylistsBuilder.buildItems()')
+        Utils.log('PlaylistsBuilder.buildItems()')
         playlists = MixcloudInterface().getList(self.key, {'offset' : self.offset})
         for playlist in playlists.items:
+            # user aborted
+            if xbmc.Monitor().abortRequested():
+                break
+                
             if playlist.image:
                 image = playlist.image
             elif self.key == '/categories/':
-                image = getIcon('nav/kodi_categories.png')
+                image = Utils.getIcon('nav/kodi_categories.png')
             elif self.key == '/me/playlists/':
-                image = getIcon('nav/kodi_playlists.png')
+                image = Utils.getIcon('nav/kodi_playlists.png')
             else:
                 image = ''
             contextMenuItems = self.buildContextMenuItems(playlist)
@@ -93,33 +101,15 @@ class PlaylistsBuilder(BaseListBuilder):
     
 
 
-# simple play history menu (without profile listens)
-class SimplePlayHistoryBuilder(BaseListBuilder):
-
-    def buildItems(self):
-        log('SimplePlayHistoryBuilder.buildItems()')
-        xbmcplugin.setContent(self.plugin_handle, 'songs')
-        playHistory = History('play_history')
-        if playHistory:
-            cloudcasts = MixcloudInterface().getCloudcasts(playHistory.data, {'offset' : self.offset})
-            for cloudcast in cloudcasts.items:
-                contextMenuItems = self.buildContextMenuItems(cloudcast)
-                self.addAudioItem(cloudcast.infolabels, {'mode' : 'resolve', 'key' : cloudcast.key, 'user' : cloudcast.user}, cloudcast.image, contextMenuItems, len(cloudcasts.items))
-            return cloudcasts.nextOffset
-        else:
-            return 0
-
-
-
 # play history menu (with profile listens)
 class PlayHistoryBuilder(BaseListBuilder):
 
     def buildItems(self):
-        log('PlayHistoryBuilder.buildItems()')
+        Utils.log('PlayHistoryBuilder.buildItems()')
         xbmcplugin.setContent(self.plugin_handle, 'songs')
 
         cloudcasts = []
-        playHistory = History('play_history')
+        playHistory = History.getHistory('play_history')
         if playHistory:
             cloudcasts.append(MixcloudInterface().getCloudcasts(playHistory.data, {'offset' : self.offset[0]}))
         else:
@@ -139,6 +129,10 @@ class PlayHistoryBuilder(BaseListBuilder):
             mergedCloudcasts.nextOffset = [0, 0]
 
         for cloudcast in mergedCloudcasts.items:
+            # user aborted
+            if xbmc.Monitor().abortRequested():
+                break
+                
             contextMenuItems = self.buildContextMenuItems(cloudcast)
             self.addAudioItem(cloudcast.infolabels, {'mode' : 'resolve', 'key' : cloudcast.key, 'user' : cloudcast.user}, cloudcast.image, contextMenuItems, len(mergedCloudcasts.items))
 
@@ -150,19 +144,23 @@ class PlayHistoryBuilder(BaseListBuilder):
 class SearchBuilder(BaseListBuilder):
 
     def buildItems(self):
-        self.addFolderItem({'title' : Lang.SEARCH_FOR_CLOUDCASTS}, {'mode' : 'searchcloudcast'}, getIcon('nav/kodi_search.png'))
-        self.addFolderItem({'title' : Lang.SEARCH_FOR_USERS}, {'mode' : 'searchuser'}, getIcon('nav/kodi_search.png'))
-        searchHistory = History('search_history')
+        self.addFolderItem({'title' : Lang.SEARCH_FOR_CLOUDCASTS}, {'mode' : 'searchcloudcast'}, Utils.getIcon('nav/kodi_search.png'))
+        self.addFolderItem({'title' : Lang.SEARCH_FOR_USERS}, {'mode' : 'searchuser'}, Utils.getIcon('nav/kodi_search.png'))
+        searchHistory = History.getHistory('search_history')
         if searchHistory:
             index = 0
             for keyitem in searchHistory.data:
+                # user aborted
+                if xbmc.Monitor().abortRequested():
+                    break
+                
                 index += 1
                 if index > self.offset:
                     if index <= self.offset + 10:
                         if keyitem['key'] == 'cloudcast':
-                            self.addFolderItem({'title' : keyitem['value']}, {'mode' : 'searchcloudcast', 'key' : keyitem['value']}, getIcon('nav/kodi_playlists.png'))
+                            self.addFolderItem({'title' : keyitem['value']}, {'mode' : 'searchcloudcast', 'key' : keyitem['value']}, Utils.getIcon('nav/kodi_playlists.png'))
                         elif keyitem['key'] == 'user':
-                            self.addFolderItem({'title' : keyitem['value']}, {'mode' : 'searchuser', 'key' : keyitem['value']}, getIcon('nav/kodi_profile.png'))
+                            self.addFolderItem({'title' : keyitem['value']}, {'mode' : 'searchuser', 'key' : keyitem['value']}, Utils.getIcon('nav/kodi_profile.png'))
                     else:
                         break
             if index < len(searchHistory.data):
@@ -178,10 +176,14 @@ class SearchCloudcastBuilder(QueryListBuilder):
         xbmcplugin.setContent(self.plugin_handle, 'songs')
         cloudcasts = MixcloudInterface().getList('/search/', {'q' : query, 'type' : 'cloudcast', 'offset' : self.offset})
         for cloudcast in cloudcasts.items:
+            # user aborted
+            if xbmc.Monitor().abortRequested():
+                break
+                
             contextMenuItems = self.buildContextMenuItems(cloudcast)
             self.addAudioItem(cloudcast.infolabels, {'mode' : 'resolve', 'key' : cloudcast.key, 'user' : cloudcast.user}, cloudcast.image, contextMenuItems, len(cloudcasts.items))
         if not self.key:
-            searchHistory = History('search_history')
+            searchHistory = History.getHistory('search_history')
             if searchHistory:
                 searchHistory.add({'key' : 'cloudcast', 'value' : query})
         return cloudcasts.nextOffset
@@ -194,10 +196,14 @@ class SearchUserBuilder(QueryListBuilder):
     def buildQueryItems(self, query):
         users = MixcloudInterface().getList('/search/', {'q' : query, 'type' : 'user', 'offset' : self.offset})
         for user in users.items:
+            # user aborted
+            if xbmc.Monitor().abortRequested():
+                break
+                
             contextMenuItems = self.buildContextMenuItems(user)
             self.addFolderItem(user.infolabels, {'mode' : 'cloudcasts', 'key' : user.key + 'cloudcasts/'}, user.image, contextMenuItems)
         if not self.key:
-            searchHistory = History('search_history')
+            searchHistory = History.getHistory('search_history')
             if searchHistory:
                 searchHistory.add({'key' : 'user', 'value' : query})
         return users.nextOffset
@@ -232,11 +238,11 @@ class ClearHistoryBuilder(BaseBuilder):
 
     def build(self):
         if xbmcgui.Dialog().yesno('Mixcloud', Lang.ASK_CLEAR_HISTORY):
-            playHistory = History('play_history')
+            playHistory = History.getHistory('play_history')
             playHistory.clear()
             playHistory.writeFile()
 
-            searchHistory = History('search_history')
+            searchHistory = History.getHistory('search_history')
             searchHistory.clear()
             searchHistory.writeFile()
 
@@ -249,7 +255,6 @@ BUILDERS = {
     '' : MainBuilder,
     'cloudcasts' : CloudcastsBuilder,
     'playlists' : PlaylistsBuilder,
-    'simpleplayhistory' : SimplePlayHistoryBuilder,
     'playhistory' : PlayHistoryBuilder,
     'search' : SearchBuilder,
     'searchcloudcast' : SearchCloudcastBuilder,
@@ -264,9 +269,21 @@ BUILDERS = {
 # main entry
 def run():
     starttime = datetime.now()
-    log('##############################################################################################################################')
-    plugin_args = getArguments()
-    log('args: ' + str(plugin_args))
-    BUILDERS.get(plugin_args.get('mode', ''), MainBuilder)().execute()
+    Utils.log('##############################################################################################################################')
+    plugin_args = Utils.getArguments()
+    Utils.log('args: ' + str(plugin_args))
+
+    try:
+        BUILDERS.get(plugin_args.get('mode', ''), MainBuilder)().execute()
+    except Exception as e:
+        Utils.log('builder execute failed', e)
+
     elapsedtime = datetime.now() - starttime
-    log('executed in ' + str(elapsedtime.seconds) + '.' + str(elapsedtime.microseconds) + ' seconds')
+    Utils.log('executed in ' + str(elapsedtime.seconds) + '.' + str(elapsedtime.microseconds) + ' seconds')
+
+    # version check
+    currentVersion = Utils.getVersion()
+    lastCheckedVersion = Utils.getSetting('last_checked_version')
+    if currentVersion != lastCheckedVersion:
+        xbmcgui.Dialog().ok('Mixcloud', Utils.getChangeLog())
+    Utils.setSetting('last_checked_version', currentVersion)

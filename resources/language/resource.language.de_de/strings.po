@@ -205,3 +205,27 @@ msgstr "Maximaler suchverlauf"
 msgctxt "#30933"
 msgid "Clear history..."
 msgstr "Verlauf entfernen..."
+
+
+
+# thumbnail sizes
+
+msgctxt "#30940"
+msgid "very small (25x25)"
+msgstr "sehr klein (25x25)"
+
+msgctxt "#30941"
+msgid "small (50x50)"
+msgstr "klein (50x50)"
+
+msgctxt "#30942"
+msgid "medium (100x100)"
+msgstr "mittel (100x100)"
+
+msgctxt "#30943"
+msgid "large (300x300)"
+msgstr "groß (300x300)"
+
+msgctxt "#30944"
+msgid "extra large (600x600)"
+msgstr "extra groß (600x600)"
