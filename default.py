@@ -245,19 +245,19 @@ def add_folder_item(name,infolabels={},parameters={},img=''):
 
 def show_home_menu():
     if access_token!='':
-        add_folder_item(name=STRLOC_MAINMENU_FOLLOWINGS,parameters={STR_MODE:MODE_FOLLOWINGS},img=get_icon('yourfollowings.png'))
-        add_folder_item(name=STRLOC_MAINMENU_FOLLOWERS,parameters={STR_MODE:MODE_FOLLOWERS},img=get_icon('yourfollowers.png'))
-        add_folder_item(name=STRLOC_MAINMENU_FAVORITES,parameters={STR_MODE:MODE_FAVORITES},img=get_icon('yourfavorites.png'))
-        add_folder_item(name=STRLOC_MAINMENU_LISTENS,parameters={STR_MODE:MODE_LISTENS},img=get_icon('yourlistens.png'))
-        add_folder_item(name=STRLOC_MAINMENU_UPLOADS,parameters={STR_MODE:MODE_UPLOADS},img=get_icon('youruploads.png'))
-        add_folder_item(name=STRLOC_MAINMENU_PLAYLISTS,parameters={STR_MODE:MODE_PLAYLISTS},img=get_icon('yourplaylists.png'))
-        add_folder_item(name=STRLOC_MAINMENU_LISTENLATER,parameters={STR_MODE:MODE_LISTENLATER},img=get_icon('listenlater.png'))
+        add_folder_item(name=STRLOC_MAINMENU_FOLLOWINGS,parameters={STR_MODE:MODE_FOLLOWINGS},img=get_icon('kodi_highlight.png'))
+        add_folder_item(name=STRLOC_MAINMENU_FOLLOWERS,parameters={STR_MODE:MODE_FOLLOWERS},img=get_icon('kodi_highlight.png'))
+        add_folder_item(name=STRLOC_MAINMENU_FAVORITES,parameters={STR_MODE:MODE_FAVORITES},img=get_icon('kodi_favorites.png'))
+        add_folder_item(name=STRLOC_MAINMENU_LISTENS,parameters={STR_MODE:MODE_LISTENS},img=get_icon('kodi_history.png'))
+        add_folder_item(name=STRLOC_MAINMENU_UPLOADS,parameters={STR_MODE:MODE_UPLOADS},img=get_icon('kodi_uploads.png'))
+        add_folder_item(name=STRLOC_MAINMENU_PLAYLISTS,parameters={STR_MODE:MODE_PLAYLISTS},img=get_icon('kodi_playlists.png'))
+        add_folder_item(name=STRLOC_MAINMENU_LISTENLATER,parameters={STR_MODE:MODE_LISTENLATER},img=get_icon('kodi_listenlater.png'))
         add_folder_item(name=STRLOC_MAINMENU_LOGOFF+'...',parameters={STR_MODE:MODE_LOGOFF})
     else:
-        add_folder_item(name=STRLOC_MAINMENU_LOGIN,parameters={STR_MODE:MODE_LOGIN})
-    add_folder_item(name=STRLOC_MAINMENU_CATEGORIES,parameters={STR_MODE:MODE_CATEGORIES,STR_OFFSET:0},img=get_icon('categories.png'))
-    add_folder_item(name=STRLOC_MAINMENU_SEARCH,parameters={STR_MODE:MODE_SEARCH},img=get_icon('search.png'))
-    add_folder_item(name=STRLOC_MAINMENU_HISTORY,parameters={STR_MODE:MODE_HISTORY},img=get_icon('history.png'))
+        add_folder_item(name=STRLOC_MAINMENU_LOGIN,parameters={STR_MODE:MODE_LOGIN},img=get_icon('kodi_profile.png'))
+    add_folder_item(name=STRLOC_MAINMENU_CATEGORIES,parameters={STR_MODE:MODE_CATEGORIES,STR_OFFSET:0},img=get_icon('kodi_categories.png'))
+    add_folder_item(name=STRLOC_MAINMENU_SEARCH,parameters={STR_MODE:MODE_SEARCH},img=get_icon('kodi_search.png'))
+    add_folder_item(name=STRLOC_MAINMENU_HISTORY,parameters={STR_MODE:MODE_HISTORY},img=get_icon('kodi_history.png'))
     xbmcplugin.endOfDirectory(handle=plugin_handle,succeeded=True)
 
 
