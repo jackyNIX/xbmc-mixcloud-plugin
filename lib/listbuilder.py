@@ -32,7 +32,7 @@ from .mixcloud import MixcloudInterface
 from .utils import Utils
 from .history import History
 from .resolver import ResolverBuilder
-from .base import BaseBuilder, BaseListBuilder, QueryListBuilder, BaseList
+from .base import BaseBuilder, BaseListBuilder, QueryListBuilder, BaseList, BuildResult
 from .lang import Lang
 
 
@@ -65,9 +65,10 @@ class CloudcastsBuilder(BaseListBuilder):
         Utils.log('CloudcastsBuilder.buildItems()')
         xbmcplugin.setContent(self.plugin_handle, 'songs')
         cloudcasts = MixcloudInterface().getList(self.key, {'offset' : self.offset})
+        mon = xbmc.Monitor()            
         for cloudcast in cloudcasts.items:
             # user aborted
-            if xbmc.Monitor().abortRequested():
+            if mon.abortRequested():
                 break
                 
             contextMenuItems = self.buildContextMenuItems(cloudcast)
@@ -82,9 +83,10 @@ class PlaylistsBuilder(BaseListBuilder):
     def buildItems(self):
         Utils.log('PlaylistsBuilder.buildItems()')
         playlists = MixcloudInterface().getList(self.key, {'offset' : self.offset})
+        mon = xbmc.Monitor()            
         for playlist in playlists.items:
             # user aborted
-            if xbmc.Monitor().abortRequested():
+            if mon.abortRequested():
                 break
                 
             if playlist.image:
@@ -128,9 +130,10 @@ class PlayHistoryBuilder(BaseListBuilder):
         else:
             mergedCloudcasts.nextOffset = [0, 0]
 
+        mon = xbmc.Monitor()            
         for cloudcast in mergedCloudcasts.items:
             # user aborted
-            if xbmc.Monitor().abortRequested():
+            if mon.abortRequested():
                 break
                 
             contextMenuItems = self.buildContextMenuItems(cloudcast)
@@ -149,9 +152,10 @@ class SearchBuilder(BaseListBuilder):
         searchHistory = History.getHistory('search_history')
         if searchHistory:
             index = 0
+            mon = xbmc.Monitor()            
             for keyitem in searchHistory.data:
                 # user aborted
-                if xbmc.Monitor().abortRequested():
+                if mon.abortRequested():
                     break
                 
                 index += 1
@@ -175,9 +179,10 @@ class SearchCloudcastBuilder(QueryListBuilder):
     def buildQueryItems(self, query):
         xbmcplugin.setContent(self.plugin_handle, 'songs')
         cloudcasts = MixcloudInterface().getList('/search/', {'q' : query, 'type' : 'cloudcast', 'offset' : self.offset})
+        mon = xbmc.Monitor()            
         for cloudcast in cloudcasts.items:
             # user aborted
-            if xbmc.Monitor().abortRequested():
+            if mon.abortRequested():
                 break
                 
             contextMenuItems = self.buildContextMenuItems(cloudcast)
@@ -195,9 +200,10 @@ class SearchUserBuilder(QueryListBuilder):
 
     def buildQueryItems(self, query):
         users = MixcloudInterface().getList('/search/', {'q' : query, 'type' : 'user', 'offset' : self.offset})
+        mon = xbmc.Monitor()            
         for user in users.items:
             # user aborted
-            if xbmc.Monitor().abortRequested():
+            if mon.abortRequested():
                 break
                 
             contextMenuItems = self.buildContextMenuItems(user)
@@ -219,8 +225,9 @@ class MixcloudProfileBuilder(BaseBuilder):
         elif self.key == 'logout':
             MixcloudInterface().profileLogout()
             xbmc.executebuiltin('Container.Refresh')
+            return BuildResult.ENDOFDIRECTORY_DONOTHING
         else:
-            return False
+            return BuildResult.ENDOFDIRECTORY_FAILED
 
 
 
@@ -230,6 +237,7 @@ class MixcloudProfileActionBuilder(BaseBuilder):
     def build(self):
         MixcloudInterface().profileAction(self.mode.upper(), self.key)
         xbmc.executebuiltin('Container.Refresh')
+        return BuildResult.ENDOFDIRECTORY_DONOTHING
 
 
 
@@ -247,6 +255,7 @@ class ClearHistoryBuilder(BaseBuilder):
             searchHistory.writeFile()
 
         xbmc.executebuiltin('Container.Refresh')
+        return BuildResult.ENDOFDIRECTORY_DONOTHING
 
 
 

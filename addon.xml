@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addon id="plugin.audio.mixcloud"
        name="Mixcloud"
-       version="3.0.0~rc"
+       version="3.0.0"
        provider-name="jackyNIX">
   <requires>
     <import addon="xbmc.python" version="3.0.0"/>
@@ -19,24 +19,19 @@
     <description lang="fr_FR">Mixcloud redéfinit la radio. Écoutez les émissions radio, podcasts et mixes DJ sur demande.</description>
     <description lang="de_DE">Mixcloud erfindet Radio neu. Höre Radioshows, Podcasts und DJ Mixe wann immer Du willst.</description>
     <news>
-      v3.0.0 (2020-03-03)
+      v3.0.0 (2020-03-04)
       [new] python 3 migration
       [new] new logo, icons and other art
-      [fix] improved history
-      [fix] cleanup obsolete menu items
     </news>
     <platform>all</platform>
-    <language></language>
-    <license>GPL-3.0</license>
+    <language>en</language>
+    <license>GPL-3.0-or-later</license>
     <forum>https://forum.kodi.tv/showthread.php?tid=116386</forum>
     <website>https://www.mixcloud.com</website>
     <source>https://github.com/jackyNIX/xbmc-mixcloud-plugin</source>
     <assets>
-      <icon>resources/icons/10/mixcloud_10_blue.png</icon>
+      <icon>resources/icon.png</icon>
       <fanart>resources/fanart.jpg</fanart>
-      <clearlogo>resources/icons/10/mixcloud_10_trans.png</clearlogo>
-      <screenshot>resources/screenshot1.jpg</screenshot>
-      <screenshot>resources/screenshot2.jpg</screenshot>
     </assets>
     <reuselanguageinvoker>true</reuselanguageinvoker>
   </extension>

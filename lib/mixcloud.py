@@ -85,9 +85,10 @@ class MixcloudInterface:
             response = json.loads(request.urlopen(url).read())
             if 'data' in response and response['data'] :
                 data = response['data']
+                mon = xbmc.Monitor()            
                 for item in data:
                     # user aborted
-                    if xbmc.Monitor().abortRequested():
+                    if mon.abortRequested():
                         break
                 
                     if (Utils.getSetting('ext_info') == 'true') and (listLimit == 10) and ('key' in item) and (item['key']):
@@ -113,9 +114,10 @@ class MixcloudInterface:
             index = 0
             if parameters and 'offset' in parameters and parameters['offset']:
                 offset = parameters['offset']
+            mon = xbmc.Monitor()            
             for keyitem in keylist:
                 # user aborted
-                if xbmc.Monitor().abortRequested():
+                if mon.abortRequested():
                     break
                 
                 if index >= offset:
@@ -215,9 +217,10 @@ class MixcloudInterface:
             Utils.log('No access token found')
             ask = True
             oathCode = Utils.getSetting('oath_code')
+            mon = xbmc.Monitor()            
             while ask:
                 # user aborted
-                if xbmc.Monitor().abortRequested():
+                if mon.abortRequested():
                     break
                 
                 ask = xbmcgui.Dialog().yesno('Mixcloud', Lang.TOKEN_ERROR, Lang.ENTER_OATH_CODE)

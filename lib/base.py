@@ -29,6 +29,14 @@ import sys
 import xbmc
 import xbmcplugin
 import xbmcgui
+from enum import Enum
+
+
+
+class BuildResult(Enum):
+    ENDOFDIRECTORY_DONOTHING = 0
+    ENDOFDIRECTORY_FAILED = 1
+    ENDOFDIRECTORY_SUCCESS = 2
 
 
 
@@ -49,12 +57,13 @@ class BaseBuilder:
     def execute(self):
         Utils.log('BaseBuilder.execute()')
         ret = self.build()
-        if ret != None:
-            xbmcplugin.endOfDirectory(handle = self.plugin_handle, succeeded = ret)
+        if ret is not BuildResult.ENDOFDIRECTORY_DONOTHING:
+            xbmcplugin.endOfDirectory(handle = self.plugin_handle, succeeded = (ret is BuildResult.ENDOFDIRECTORY_SUCCESS))
 
+    # returns BuildResult
     def build(self):
         Utils.log('BaseBuilder.build()')
-        return True
+        return BuildResult.ENDOFDIRECTORY_SUCCESS
 
 
 
@@ -69,13 +78,17 @@ class BaseListBuilder(BaseBuilder):
         if isinstance(nextOffset, list):
             nextOffsetEx = nextOffset[1]
             nextOffset = nextOffset[0]
-        if (nextOffset and (nextOffset > 0)) or ((nextOffsetEx != None) and (nextOffsetEx > 0)):
+        if (nextOffset and (nextOffset > 0)) or ((nextOffsetEx is not None) and (nextOffsetEx > 0)):
             parameters = {'mode' : self.mode, 'key' : self.key, 'offset' : nextOffset}
-            if nextOffsetEx != None:
+            if nextOffsetEx is not None:
                 parameters['offsetex'] = nextOffsetEx
             self.addFolderItem({'title' : Lang.MORE}, parameters)
-        return (nextOffset != -1)
+        if nextOffset != -1:
+            return BuildResult.ENDOFDIRECTORY_SUCCESS
+        else:
+            return BuildResult.ENDOFDIRECTORY_FAILED
 
+    # returns offset
     def buildItems(self):
         Utils.log('BaseListBuilder.buildItems()')
         return 0
@@ -156,8 +169,7 @@ class QueryListBuilder(BaseListBuilder):
 
 
 
-
-
+# class for list data
 class BaseList:
 
     def __init__(self):
@@ -183,9 +195,10 @@ class BaseList:
             count.append(len(baseList.items))
             curItems.append(None)
 
+        mon = xbmc.Monitor()            
         for iMerged in range(maxItems):
             # user aborted
-            if xbmc.Monitor().abortRequested():
+            if mon.abortRequested():
                 break
                 
             for iList in range(listCount):
@@ -201,12 +214,13 @@ class BaseList:
                         iAdd = iList
                     
             if iAdd != -1:
+                Utils.log('merge: ' + str(iMerged) + ' from ' + str(iAdd) + ' - ' + str(curItems[iAdd]))
                 self.items.append(curItems[iAdd])
                 index[iAdd] = index[iAdd] + 1
             else:
                 break
 
-        Utils.log('merged result: ' + str(len(self.items)) + ' ' + str(self.items))
+        Utils.log('merged result: ' + str(len(self.items)))
         Utils.log('nextoffset: ' + str(index))
         self.nextOffset = index
 

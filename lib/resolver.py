@@ -74,9 +74,10 @@ class MixcloudResolver(BaseResolver):
                     decoded = '[' + match.group(1) + ']'
                     content = json.loads(decoded)
                     isexclusive = False
+                    mon = xbmc.Monitor()            
                     for item in content:
                         # user aborted
-                        if xbmc.Monitor().abortRequested():
+                        if mon.abortRequested():
                             break
                 
                         if 'cloudcastLookup' in item and item['cloudcastLookup']:
@@ -176,9 +177,10 @@ class OfflibertyResolver(BaseResolver):
         url = None
         ck = 'https://www.mixcloud.com' + self.key
 
+        mon = xbmc.Monitor()            
         for retry in range(1, 2):
             # user aborted
-            if xbmc.Monitor().abortRequested():
+            if mon.abortRequested():
                 break
                 
             Utils.log('resolving cloudcast stream via offliberty (' + str(retry) + '): ' + ck)
@@ -243,9 +245,10 @@ class ResolverBuilder(BaseBuilder):
             activeResolvers.append(OfflibertyResolver)
         Utils.log('active resolvers: ' + str(activeResolvers))
 
+        mon = xbmc.Monitor()            
         for resolver in activeResolvers:
             # user aborted
-            if xbmc.Monitor().abortRequested():
+            if mon.abortRequested():
                 break
                 
             strm_url = resolver(self.key).resolve()

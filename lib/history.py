@@ -54,9 +54,8 @@ class History:
         try:
             # read file
             if os.path.exists(filepath):
-                text_file = open(filepath, 'r')
-                self.data = json.loads(text_file.read())
-                text_file.close()
+                with open(filepath, 'r') as text_file:
+                    self.data = json.loads(text_file.read())
                 self.trim()
             elif __addon__.getSetting(self.name+'_list'):
                 # convert old 2.4.x settings
@@ -84,9 +83,8 @@ class History:
     def writeFile(self):
         filepath = xbmc.translatePath(__addon__.getAddonInfo('profile')) + self.name + '.json'
         try:
-            text_file = open(filepath, 'w+')
-            text_file.write(json.dumps(self.data, indent = 4 * ' '))
-            text_file.close()
+            with open(filepath, 'w+') as text_file:
+                text_file.write(json.dumps(self.data, indent = 4 * ' '))
         except Exception as e:
             Utils.log('unable to write json file: ' + filepath, e)
 
@@ -105,9 +103,10 @@ class History:
         json_max = 1
         if __addon__.getSetting(self.name + '_max'):
             json_max = int(__addon__.getSetting(self.name + '_max'))
+        mon = xbmc.Monitor()            
         while len(self.data) > json_max:
             # user aborted
-            if xbmc.Monitor().abortRequested():
+            if mon.abortRequested():
                 break
                 
             self.data.pop()
