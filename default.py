@@ -606,18 +606,16 @@ def get_stream_offliberty(cloudcast_key):
     for retry in range(1, 2):
         try:
             values={
-                    'track' : ck,
-                    'refext' : 'https://www.google.com/'
+                    'url' : ck
                    }
             headers={
                      'User-Agent' : 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.27 Safari/537.36',
-                     'Referer' : 'http://offliberty.com/'
                     }
-            postdata = urllib.urlencode(values)
-            request = urllib2.Request('http://offliberty.com/off04.php', postdata, headers, 'http://offliberty.com/')
+            getdata = urllib.urlencode(values)
+            request = urllib2.Request('https://offliberty.online/download?' + getparams, headers=headers)
             response = urllib2.urlopen(request)
             data=response.read()
-            match=re.search('href="(.*)" class="download"', data)
+            match=re.search('href="(.*)" download="', data)
             if match:
                 return match.group(1)
             else:
