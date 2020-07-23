@@ -611,7 +611,7 @@ def get_stream_offliberty(cloudcast_key):
             headers={
                      'User-Agent' : 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.27 Safari/537.36',
                     }
-            getdata = urllib.urlencode(values)
+            getparams = urllib.urlencode(values)
             request = urllib2.Request('https://offliberty.online/download?' + getparams, headers=headers)
             response = urllib2.urlopen(request)
             data=response.read()
