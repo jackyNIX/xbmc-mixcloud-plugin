@@ -943,7 +943,7 @@ def add_to_settinglist(name,value,maxname):
 
 def log_if_debug(message):
     if debugenabled:
-        xbmc.log(msg='MIXCLOUD '+message,level=xbmc.LOGNOTICE)
+        xbmc.log(msg='MIXCLOUD '+message,level=xbmc.LOGINFO)
 
 
 
