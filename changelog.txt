@@ -1,5 +1,6 @@
 2.5.0
 - new logo and icons
+- fixed offliberty resolver
 
 2.4.3
 - handle exclusive cloudcasts
