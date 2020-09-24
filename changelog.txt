@@ -1,3 +1,8 @@
+3.0.1
+- fixed offliberty resolver
+- deactivate broken resolvers
+- changed lognotice to loginfo
+
 3.0.0
 - python 3 migration
 - new logo, icons and other art
