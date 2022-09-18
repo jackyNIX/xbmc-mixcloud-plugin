@@ -28,7 +28,10 @@ import sys
 import json
 from datetime import datetime
 import xbmc
+import xbmcgui
 import xbmcaddon
+import xbmcplugin
+import xbmcvfs
 from .utils import Utils 
 
 
@@ -49,7 +52,7 @@ class History:
     def readFile(self):
         starttime = datetime.now()
         self.data = []
-        filepath = xbmc.translatePath(__addon__.getAddonInfo('profile')) + self.name + '.json'
+        filepath = xbmcvfs.translatePath(__addon__.getAddonInfo('profile')) + self.name + '.json'
         Utils.log('reading json file: ' + filepath)
         try:
             # read file
