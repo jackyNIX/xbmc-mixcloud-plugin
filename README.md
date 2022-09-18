@@ -9,7 +9,7 @@
   - fleshgolem
   - gordielachance
   - understatement
-  - peat8
+  - peat80
   - ronan-ln
 
 ### Current version: 
