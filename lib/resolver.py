@@ -93,12 +93,12 @@ class MixcloudResolver(BaseResolver):
             postdata = json.dumps(graphql).encode()
             headers = {
                 'Referer' : 'https://www.mixcloud.com',
-                'X-CSRFToken' : csrf_token,
-                'Cookie' : 'csrftoken=' + csrf_token,
+          #      'X-CSRFToken' : csrf_token,
+          #      'Cookie' : 'csrftoken=' + csrf_token,
                 'Content-Type' : 'application/json'
             }
 
-            req = request.Request('https://www.mixcloud.com/graphql', postdata, headers, 'https://www.mixcloud.com')
+            req = request.Request('https://app.mixcloud.com/graphql', postdata, headers, 'https://www.mixcloud.com')
             response = request.urlopen(req)
             content = response.read()
             json_content = json.loads(content)
