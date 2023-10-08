@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addon id="plugin.audio.mixcloud"
        name="Mixcloud"
-       version="3.0.3"
+       version="3.0.4"
        provider-name="jackyNIX">
   <requires>
     <import addon="xbmc.python" version="3.0.0"/>
@@ -19,10 +19,10 @@
     <description lang="fr_FR">Mixcloud redéfinit la radio. Écoutez les émissions radio, podcasts et mixes DJ sur demande.</description>
     <description lang="de_DE">Mixcloud erfindet Radio neu. Höre Radioshows, Podcasts und DJ Mixe wann immer Du willst.</description>
     <news> 	
-      v3.0.3 (2022-09-18)
-      Fixed KODI 20 incompatibility (thx PvD)
-      ( https://www.kodinerds.net/index.php/Thread/75794-Mixcloud-Addon-Kodi-20/ )
-      Added new icon which combines old and new logo
+      v3.0.4 (2023-10-08)
+      Fixed broken Addon (Fix by Darionis)
+      ( https://forum.kodi.tv/showthread.php?tid=116386&page=13 )
+      Updated german translations
     </news>
     <platform>all</platform>
     <language>en</language>
@@ -36,4 +36,6 @@
     </assets>
     <reuselanguageinvoker>true</reuselanguageinvoker>
   </extension>
+</addon>                       
+nsion>
 </addon>                       
