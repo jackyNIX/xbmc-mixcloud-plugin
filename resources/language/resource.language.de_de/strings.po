@@ -24,11 +24,11 @@ msgstr "Profil..."
 
 msgctxt "#30101"
 msgid "Followings"
-msgstr ""
+msgstr "Meine Künstler"
 
 msgctxt "#30102"
 msgid "Followers"
-msgstr "Anhänger"
+msgstr "Meine Anhänger"
 
 msgctxt "#30103"
 msgid "Favorites"
@@ -108,11 +108,11 @@ msgstr "Nicht später hören"
 
 msgctxt "#30400"
 msgid "No valid access token found."
-msgstr "Kein gültiger zugriffstoken gefunden."
+msgstr "Kein gültiger Zugriffstoken gefunden."
 
 msgctxt "#30401"
 msgid "Please provide your authentication code."
-msgstr "Bitte deinen authentifizierungscode eingeben."
+msgstr "Bitte deinen Authentifizierungscode eingeben."
 
 msgctxt "#30402"
 msgid "Logout?"
@@ -124,7 +124,7 @@ msgstr "Verlauf entfernen?"
 
 msgctxt "#30404"
 msgid "No active resolvers found. Please check your settings."
-msgstr "Keine aktiven resolver gefunden. Bitte überprüfen sie ihre einstellungen."
+msgstr "Keine aktiven Resolver gefunden. Bitte Einstellungen überprüfen."
 
 
 
@@ -136,19 +136,19 @@ msgstr "Allgemein"
 
 msgctxt "#30901"
 msgid "Maximum rows on page"
-msgstr "Maximale zeilen auf seite"
+msgstr "Maximale Zeilen pro Seite"
 
 msgctxt "#30902"
 msgid "Thumbnail size"
-msgstr "Thumbnail größe"
+msgstr "Größe der Thumbnails"
 
 msgctxt "#30903"
 msgid "Debug mode"
-msgstr "Debug-modus"
+msgstr "Debug-Modus"
 
 msgctxt "#30904"
 msgid "Extended info (slower)"
-msgstr "Erweiterte info (langsamer)"
+msgstr "Erweiterte Info (langsamer)"
 
 
 
@@ -176,15 +176,15 @@ msgstr "Ausloggen..."
 
 msgctxt "#30920"
 msgid "Resolvers"
-msgstr ""
+msgstr "Resolver"
 
 msgctxt "#30921"
 msgid "mixcloud.com"
-msgstr ""
+msgstr "Mixcloud.com"
 
 msgctxt "#30922"
 msgid "mixcloud-downloader.com [BROKEN]"
-msgstr ""
+msgstr "Mixcloud-Downloader.com [Defekt]"
 
 msgctxt "#30923"
 msgid "offliberty.online"
@@ -200,11 +200,11 @@ msgstr "Verlauf"
 
 msgctxt "#30931"
 msgid "Maximum play history"
-msgstr "Maximaler playverlauf"
+msgstr "Maximaler Abspielverlauf"
 
 msgctxt "#30932"
 msgid "Maximum search history"
-msgstr "Maximaler suchverlauf"
+msgstr "Maximaler Suchverlauf"
 
 msgctxt "#30933"
 msgid "Clear history..."
@@ -216,20 +216,20 @@ msgstr "Verlauf entfernen..."
 
 msgctxt "#30940"
 msgid "very small (25x25)"
-msgstr "sehr klein (25x25)"
+msgstr "Sehr Klein (25x25)"
 
 msgctxt "#30941"
 msgid "small (50x50)"
-msgstr "klein (50x50)"
+msgstr "Klein (50x50)"
 
 msgctxt "#30942"
 msgid "medium (100x100)"
-msgstr "mittel (100x100)"
+msgstr "Mittel (100x100)"
 
 msgctxt "#30943"
 msgid "large (300x300)"
-msgstr "groß (300x300)"
+msgstr "Groß (300x300)"
 
 msgctxt "#30944"
 msgid "extra large (600x600)"
-msgstr "extra groß (600x600)"
+msgstr "Sehr Groß (600x600)"

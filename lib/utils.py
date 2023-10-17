@@ -29,8 +29,10 @@ import json
 from datetime import datetime
 from urllib import parse
 import xbmc
+import xbmcgui
 import xbmcaddon
 import xbmcplugin
+import xbmcvfs
 import re
 import traceback
 
@@ -56,7 +58,7 @@ class Utils:
     # icons
     @staticmethod
     def getIcon(iconname):
-        return xbmc.translatePath(os.path.join(__addon__.getAddonInfo('path'), 'resources', 'icons', iconname))
+        return xbmcvfs.translatePath(os.path.join(__addon__.getAddonInfo('path'), 'resources', 'icons', iconname))
 
 
 

@@ -1,3 +1,14 @@
+3.0.4
+-add fix from Darionis (https://forum.kodi.tv/showthread.php?tid=116386&page=13) 
+-updated german translations
+
+3.0.3
+- fix kodi 20 compatibility (thx PvD @KODInerds forum)
+- added new icon which combines old and new logo
+
+3.0.2
+- fix local mixcloud resolver
+
 3.0.1
 - fixed offliberty resolver
 - deactivate broken resolvers

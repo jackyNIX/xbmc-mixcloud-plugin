@@ -9,12 +9,12 @@
   - fleshgolem
   - gordielachance
   - understatement
-  - peat8
+  - peat80
   - ronan-ln
 
 ### Current version: 
-  3.0.2
-  - Matrix
+  3.0.3
+  - Nexus
 
 ### Features:
   - Profile
